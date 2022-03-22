@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+
+    <node name="arucoGTGeneration" pkg="groundTruthGeneration"
+        type="arucoGTGeneration.py" respawn="false" output="screen"/>
+
+    <node name="plotOdom" pkg="groundTruthGeneration" type="plotOdom.py"
+        respawn="false" output="screen"/>
+
+</launch>
