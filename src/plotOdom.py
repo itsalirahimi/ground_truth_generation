@@ -53,8 +53,8 @@ def set_axes_equal(ax):
 
 while True:
 
-    odoms_df = pd.read_csv('odomPoses.csv', sep=',', header=None)
-    markers_df = pd.read_csv('markerPoses.csv', sep=',', header=None)
+    odoms_df = pd.read_csv('/media/hamidreza/Local Disk/rosbag/93/tello_test/2022-03-10/16-33-13/odomPoses.csv', sep=',', header=None)
+    markers_df = pd.read_csv('/media/hamidreza/Local Disk/rosbag/93/tello_test/2022-03-10/16-33-13/rawMarkerPoses.csv', sep=',', header=None)
     ax.cla()
     xs_o = odoms_df.values[:,0]
     ys_o = odoms_df.values[:,1]

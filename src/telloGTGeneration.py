@@ -594,6 +594,6 @@ rospy.init_node('telloGTGeneration', anonymous=True)
 agtg = ArucoBasedDroneGroundTruthGeneration(\
 	"/media/hamidreza/Local Disk/rosbag/93/tello_test/2022-03-10/16-33-13",
 	"../params/telloCam.yaml")
-agtg.deleteOutliers()
+# agtg.deleteOutliers()
 
 rospy.spin()
