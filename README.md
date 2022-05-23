@@ -101,9 +101,9 @@ python plotOdom.py
 ```
 
 **OUTPUT:** 
-* <saveDir>/odomPoses.csv
-* <saveDir>/rawMarkerPoses.csv
-* All the drone images in which the markers are visible in <saveDir>/markerDetectionFrames
+* <save-dir>/odomPoses.csv
+* <save-dir>/rawMarkerPoses.csv
+* All the drone images in which the markers are visible in <save-dir>/markerDetectionFrames
 
 ### 2. Optimize the drone's path using the aruco markers' data 
 
@@ -141,7 +141,7 @@ python objectGTGeneration.py <fake-file>
 	a: quit
  	s: crop ROI for front view
  	d: crop ROI for side view
- 	f: start processing
+ 	f: start processing 
 ```
 
 For each of front and side views, crop the tightest rectangle over the area in which the field is seen. In the cropped windows, click on the marked points in this order:
@@ -154,19 +154,49 @@ For each of front and side views, crop the tightest rectangle over the area in w
 Hit **F**, so the pose estimation starts. 
 The data must be saved if the related code block within function 'savePath' is active.
 
+**OUTPUT:** 
+* objectPoses.csv
+
+[]: TODO: It must be saved in the <save-dir>
+
+
 ### 4. Visualize and save the pose of robot and object simultaneously
 
+1. Fisrt, save the bag images of drone camera:
 
+```
+python processImageBags.py "write" "<path-to-bag-file>"
+```
 
+**OUTPUT:** 
+* All numbered bag images within an output folder inside the bag file's directory
+* A file named "info.csv" within the output folder including the time instant for each, since beginning
 
+2. Considering the fact that the front view video and side view video have been synchronized (Their frame difference number is recorded and set in *objectGTGeneration.py*), pick one of the folders *frames_front* or *frames_side*, and compare the frame sequence within, with the bag file's frame sequence which is written inside aforementioned output folder. Find the two corresponding frames (which seem to be simultaneous). 
 
+3. Save the bag file's frame time (within *info.csv*) as the initialization time difference between the bag file frame sequence and front (or side) camera frame sequence in the *plotTrackingPath.py* as the value of the variable 'odom_gt_dt'. Note that a positive number means that the bag file is started *before* the video stream, which is often true.   
 
+4. Having the true positions of markers, save the longitudinal and leteral distance of the down-left corner of the field with the Aruco marker number of which is 1 (Normally, the first marker which is placed in front of where the drone takes off the ground) in the *plotTrackingPath.py* as 'object_dx' and 'object_dy'. (Declare: corner pose - marker pose)
 
+5. In a terminal, run:
 
+```
+# Requires ROS
+python telloGTGeneration.py 
+```
 
+6. In another terminal, run:
 
+*You must provade the following data for the next command:*
+*- odomPoses.csv*    	(The output of dronePoseDataOptimization.py)
+*- markerPoses.csv*	(The output of telloGTGeneration.py)
+*- objectPoses.csv*	(The output of objectGTGeneration.py)
 
+```
+python plotTrackingPath.py 
+```
 
+[]: TODO: The 'plotTrackingPath.py' must read data from <save-dir> 
 
-
-
+**OUTPUT:** 
+* Online plot of drone odometry data, markers' data, and object data
