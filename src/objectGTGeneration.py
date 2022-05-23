@@ -8,7 +8,7 @@ import yaml
 import numpy as np
 import time
 from enum import Enum
-import colorDetection as cldt
+# import colorDetection as cldt
 import os
 
 
@@ -440,8 +440,8 @@ class MovingObjectGroundTruthGeneration:
 
 
 if __name__ == '__main__' :
-	mogtg = MovingObjectGroundTruthGeneration('/media/hamidreza/Local Disk/rosbag/93/tello_test/22.03.03/VID_20220303_173033.mp4',
-		'/media/hamidreza/Local Disk/rosbag/93/tello_test/22.03.03/20220303_174053.mp4')
+	mogtg = MovingObjectGroundTruthGeneration('/media/hamidreza/Local Disk/rosbag/93/tello_test/2022-03-03/VID_20220303_173033.mp4',
+		'/media/hamidreza/Local Disk/rosbag/93/tello_test/2022-03-03/20220303_174053.mp4')
 	# mogtg = MovingObjectGroundTruthGeneration('/media/hamidreza/Local Disk/rosbag/93/mavic_test/22.03.01/test_1.mp4',
 	# 	'/media/hamidreza/Local Disk/rosbag/93/mavic_test/22.03.01/test_1_side.mp4')
 	mogtg.runVideos()

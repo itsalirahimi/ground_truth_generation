@@ -66,19 +66,19 @@ Also, notice that in ROS, executing different nodes (commands) without a launch 
 roscore
 ```
 
+All the executable scripts lie inside *src* folder.
 
 ### 1. Log and Visualize the Robot's Odometry
 
 1. Write the marker ID poses inside the *telloGTGeneration.py* script.
-[//]: # (TODO: The marker ID poses should be written in a params file)
+[]: # (TODO: The marker ID poses should be written in a params file)
 Also, give the *telloGTGeneration.py* script an address to save the output,
-[//]: # (TODO: The address to save the output must be passed with argparse) 
+[]: # (TODO: The address to save the output must be passed with argparse)
 and the address of drone camera calibration file.
 
 2. In a terminal:
 
 ```
-# Within src/
 # Requires ROS
 python telloGTGeneration.py 
 ```
@@ -86,6 +86,7 @@ python telloGTGeneration.py
 3. In another terminal:
 
 ```
+# Within <bag-file-dir> 
 # Requires ROS
 rosbag play <bag-file-address> 
 ```
@@ -95,7 +96,6 @@ rosbag play <bag-file-address>
 5. Meanwhile, in a new terminal, run the following so that you can see the poses obtained from markers along with drone odometry plot.
 
 ```
-# Within src/
 # Does not require ROS
 python plotOdom.py
 ```
@@ -104,6 +104,69 @@ python plotOdom.py
 * <saveDir>/odomPoses.csv
 * <saveDir>/rawMarkerPoses.csv
 * All the drone images in which the markers are visible in <saveDir>/markerDetectionFrames
+
+### 2. Optimize the drone's path using the aruco markers' data 
+
+
+
+
+### 3. Log and Visualize the Object's Path
+
+*NO ROS REQUIREMENT*
+
+1. After giving the address of front and side view camera videos to the *writeVideos.py*, run:
+
+```
+python writeVideos.py
+```
+
+The numbered frames of the two videos are saved in the two folders *frames_front* and *frames_side* in the root. Compare and find the number of the initial frame of each video in a particular interval in which you want the object path to be recorded. 
+
+2. Set the followings in *objectGTGeneration.py*:
+* Initial frame number of each video Also
+* The field length and width
+* The fps of two videos (must be identical - default: 30)
+
+3. Run:
+
+[]: # (TODO: Runnig objectGTGeneration.py, a fake argument file must be passed. If not, there is an error)
+
+```
+python objectGTGeneration.py <fake-file>
+```
+
+4. Following the instructions, 
+
+```
+	a: quit
+ 	s: crop ROI for front view
+ 	d: crop ROI for side view
+ 	f: start processing
+```
+
+For each of front and side views, crop the tightest rectangle over the area in which the field is seen. In the cropped windows, click on the marked points in this order:
+
+	- top-left point in the field
+	- top-right point in the field
+	- down-left point in the field
+	- down-right point in the field
+
+Hit **F**, so the pose estimation starts. 
+The data must be saved if the related code block within function 'savePath' is active.
+
+### 4. Visualize and save the pose of robot and object simultaneously
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
