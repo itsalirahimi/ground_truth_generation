@@ -68,12 +68,16 @@ roscore
 
 All the executable scripts lie inside *src* folder.
 
+[//]: # "TODO: For each data source (dedicated to a particular flight test), all the data, and the following algorithms' inputs and outputs must be read and written in a <save-dir>. The only input given to each algorithm must be a <save-dir> address parsed in the command-line"
+
+[//]: # "The numerical parameters for each data source (a flight test) must be read and written in a 'params' file. Change the sturcture of the scripts so that there is no need to set any number inside modules or read and copy numbers from terminal outputs" 
+
 ### 1. Log and Visualize the Robot's Odometry
 
 1. Write the marker ID poses inside the *telloGTGeneration.py* script.
-[]: # (TODO: The marker ID poses should be written in a params file)
+[//]: # "TODO: The marker ID poses should be written in a <params-file> inside the <save-dir>"
 Also, give the *telloGTGeneration.py* script an address to save the output,
-[]: # (TODO: The address to save the output must be passed with argparse)
+[//]: # "TODO: The address to save the output must be passed with argparse"
 and the address of drone camera calibration file.
 
 2. In a terminal:
@@ -87,13 +91,14 @@ python telloGTGeneration.py
 
 ```
 # Within <bag-file-dir> 
+[//]: # "The <bag-file-dir> must be the <save-dir>"
 # Requires ROS
 rosbag play <bag-file-address> 
 ```
 
-4. When the output image of *telloGTGeneration.py* is shown. Hit **A** key the first time you saw a marker in the robot's camera view. This position will be considered as the inital point of the drone pose.
+4. When the output image of *telloGTGeneration.py* is shown. Hit **A** key the first time you saw a marker in the robot's camera view. This position will be considered as the initial point of the drone pose.
 
-5. Meanwhile, in a new terminal, run the following so that you can see the poses obtained from markers along with drone odometry plot.
+5. Meanwhile, in a new terminal, run the following so that you can see the poses obtained from markers along with the drone odometry plot.
 
 ```
 # Does not require ROS
@@ -107,29 +112,72 @@ python plotOdom.py
 
 ### 2. Optimize the drone's path using the aruco markers' data 
 
+Using a gradient descent approach, this feature corrects the drifted drone odometry poses to match the reliable Aruco pose data as much as possible.
 
+*NO ROS REQUIREMENT*
+
+1. Set the path to 'odomPoses.csv' and 'markerPoses.csv' in the *odpd* object definition of the class *OptimizeDronePoseData()*.
+[//]: # "TODO: The 'odomPoses.csv' and 'markerPoses.csv' must be automatically read from the <save-dir>"
+
+#### Finding the optimal parameters for drone odometry data correction
+
+2. In the end of the *dronePoseDataOptimization.py*, uncomment the call to *gradientDescentOptimize()* and comment the *visualize()* function. 
+[//]: # "The two separate functionalities must be passed with argparse, not commenting and uncommenting."
+
+3. Run:
+
+```
+python dronePoseDataOptimization.py
+```
+
+**OUTPUT:** 
+* The log for the optimization in the terminal. Parameters are printed in each optimization step and the convergence procedure can be monitored.
+[//]: # "TODO: Optimal parameter values must be saved in the <params-file> inside <save-dir>"
+
+When desired (when the change in parameters is ignorable), kill the program and save the last printed parameters.
+
+#### Correcting the odometry data using the optimal parameters
+
+2. In the *__init__()* function of the class *OptimizeDronePoseData()*, set the optimal parameter values.
+[//]: # "TODO: Optimal parameter values must be read from the <params-file> inside <save-dir>"
+
+3. In the end of the *dronePoseDataOptimization.py*, comment the call to *gradientDescentOptimize()* and uncomment the *visualize()* function. 
+
+4. Run:
+
+```
+python dronePoseDataOptimization.py
+```
+
+**OUTPUT:** 
+* 'correctedPose.csv'    (The corrected odometry poses)
+[//]: # "TODO: It must be saved in the <save-dir>"
+* A plot showing the raw odometry poses, corrected odometry poses, and the Aruco marker poses (as scattered points)
+[//]: # "TODO: Save and overwrite the odometry poses plot in <save-dir>"
 
 
 ### 3. Log and Visualize the Object's Path
 
 *NO ROS REQUIREMENT*
 
-1. After giving the address of front and side view camera videos to the *writeVideos.py*, run:
+1. After setting the address of front and side view camera videos in the *writeVideos.py*, run:
+[//]: # "TODO: Pass the address of front and side view camera videos to the 'writeVideos.py' using argparse"
 
 ```
 python writeVideos.py
 ```
 
-The numbered frames of the two videos are saved in the two folders *frames_front* and *frames_side* in the root. Compare and find the number of the initial frame of each video in a particular interval in which you want the object path to be recorded. 
+The numbered frames of the two videos are saved in the two folders *frames_front* and *frames_side* in the root. Compare and find the number of the initial frame of each video in a particular interval in which you want the object path to be recorded.
 
 2. Set the followings in *objectGTGeneration.py*:
 * Initial frame number of each video Also
 * The field length and width
 * The fps of two videos (must be identical - default: 30)
+[//]: # "TODO: All of the above must be set by user in the <params-file> and read by code from it"
 
 3. Run:
 
-[]: # (TODO: Runnig objectGTGeneration.py, a fake argument file must be passed. If not, there is an error)
+[//]: # "FIX: Runnig objectGTGeneration.py, a fake argument file must be passed. If not, there is an error"
 
 ```
 python objectGTGeneration.py <fake-file>
@@ -151,13 +199,15 @@ For each of front and side views, crop the tightest rectangle over the area in w
 	- down-left point in the field
 	- down-right point in the field
 
+[//]: # "TODO: The above corner pixel addresses are now copied from the terminal. Save them in the <params-file>. Change the code so that if these data are saved in the <params-file>, there is no need to crop the image and select the corners again"
+
 Hit **F**, so the pose estimation starts. 
-The data must be saved if the related code block within function 'savePath' is active.
+The data must be saved if the related code block within the function 'savePath' is active.
 
 **OUTPUT:** 
 * objectPoses.csv
 
-[]: TODO: It must be saved in the <save-dir>
+[//]: # "TODO: It must be saved in the <save-dir>"
 
 
 ### 4. Visualize and save the pose of robot and object simultaneously
@@ -165,7 +215,7 @@ The data must be saved if the related code block within function 'savePath' is a
 1. Fisrt, save the bag images of drone camera:
 
 ```
-python processImageBags.py "write" "<path-to-bag-file>"
+python processImageBags.py "write" "<save-dir>"
 ```
 
 **OUTPUT:** 
@@ -177,6 +227,8 @@ python processImageBags.py "write" "<path-to-bag-file>"
 3. Save the bag file's frame time (within *info.csv*) as the initialization time difference between the bag file frame sequence and front (or side) camera frame sequence in the *plotTrackingPath.py* as the value of the variable 'odom_gt_dt'. Note that a positive number means that the bag file is started *before* the video stream, which is often true.   
 
 4. Having the true positions of markers, save the longitudinal and leteral distance of the down-left corner of the field with the Aruco marker number of which is 1 (Normally, the first marker which is placed in front of where the drone takes off the ground) in the *plotTrackingPath.py* as 'object_dx' and 'object_dy'. (Declare: corner pose - marker pose)
+
+[//]: # "TODO: All of the above parameters (odom_gt_dt, object_dx, object_dy) must be set by user in the <params-file> and read by code from it"
 
 5. In a terminal, run:
 
@@ -192,11 +244,15 @@ python telloGTGeneration.py
 *- markerPoses.csv*	(The output of telloGTGeneration.py)
 *- objectPoses.csv*	(The output of objectGTGeneration.py)
 
+[//]: # "TODO: All of the above must be provided in the <save-dir>"
+
 ```
 python plotTrackingPath.py 
 ```
 
-[]: TODO: The 'plotTrackingPath.py' must read data from <save-dir> 
+[//]: # "TODO: The 'plotTrackingPath.py' must read data from <save-dir>"
 
 **OUTPUT:** 
 * Online plot of drone odometry data, markers' data, and object data
+
+[//]: # "TODO: Save and overwrite the above all-data plot in <save-dir>"
