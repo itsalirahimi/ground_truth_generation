@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-# import sys
-# sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
 import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,13 +7,9 @@ import time
 import pandas as pd
 
 
-# T_init = time
-
-# fig, ax = plt.subplots()
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
-# ax.set_aspect('equal')
 odom_gt_dt = 5.94
 object_dx = -8.9
 object_dy = -0.5
@@ -49,9 +43,6 @@ def set_axes_equal(ax):
     ax.set_zlim3d([z_middle - plot_radius, z_middle + plot_radius])
 
 
-
-# def plotData():
-
 while True:
 
     odoms_df = pd.read_csv('odomPoses.csv', sep=',', header=None)
@@ -80,12 +71,10 @@ while True:
     ax.plot(xs_o, ys_o, zs_o, color='blue', linewidth=2)
     ax.plot(xs_ob, ys_ob, color='green', linewidth=2)
     ax.scatter(xs_m, ys_m, zs_m, color='red', linewidth=0)
-    # plt.gca().set_aspect('equal', adjustable='box')
     set_axes_equal(ax)
     plt.draw()
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
-    # ax.set_zlim([0,3])
 
     plt.pause(1)

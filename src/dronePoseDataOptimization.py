@@ -67,8 +67,6 @@ class OptimizeDronePoseData:
         self.ax.cla()
         self.ax.plot(self.actualData.x, self.actualData.y, self.actualData.z,
             color='blue', linewidth=2)
-        # print(self.correctedData.t)
-        # print(self.actualData.t)
         self.ax.plot(self.correctedData.x, self.correctedData.y, self.correctedData.z,
             color='green', linewidth=2)
         self.ax.scatter(self.trueData.x, self.trueData.y, self.trueData.z,
@@ -84,7 +82,6 @@ class OptimizeDronePoseData:
 
         df = pd.DataFrame(dict)
         fileName = 'correctedPose.csv'
-        # df.to_csv('csv_files/'+fileName)
         df.to_csv(fileName)
 
 

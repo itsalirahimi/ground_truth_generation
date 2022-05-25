@@ -3,12 +3,10 @@
 import cv2 as cv
 import pandas as pd
 import math
-# import argparse
 import yaml
 import numpy as np
 import time
 from enum import Enum
-# import colorDetection as cldt
 import os
 
 
@@ -235,8 +233,6 @@ class MovingObjectGroundTruthGeneration:
 	def visualize(self, frontView, sideView, frontResult, sideResult, fMotion,
 		sMotion, result, mmap_front, mmap_side):
 
-		# cv.imshow("motion_s", sMotion)
-		# cv.imshow("motion_f", fMotion)
 		if not self._presetUIDestroyed_front:
 			for p in self._fieldCorners_front:
 				cv.circle(frontView, (p[0],p[1]), 5, (0,0,255), -1)
@@ -411,9 +407,7 @@ class MovingObjectGroundTruthGeneration:
 			cv.destroyWindow(self._presetUI_side)
 			self._presetUIDestroyed_side = True
 
-		# print(image_f.shape)
 		out_f = cv.warpPerspective(image_f, self._homo_front, self._pixelMapSize)
-		# print(out_f)
 		out_s = cv.warpPerspective(image_s, self._homo_side, self._pixelMapSize)
 		return out_f, out_s
 

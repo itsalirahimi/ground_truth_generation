@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-
 import rospy
 
 import sys
@@ -9,7 +8,6 @@ sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
 import cv2 as cv
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
-# import numpy as np
 import argparse
 import rosbag
 import os
@@ -32,17 +30,13 @@ class ProcessImageBags:
         self._key = None
         self._finished = False
         self.bridge = CvBridge()
-        # self._videoWriter = cv.VideoWriter('/home/hamidreza/project_82/papers/paper_2_BD/bd_ws/src/bagProcess/src/output.avi', cv.VideoWriter_fourcc('M','J','P','G'), 30.0, (960,720))
-        # self.image_sub = rospy.Subscriber("/tello/camera/image_raw",Image,self.imageCallback)
         self._bagTopic = '/tello/camera/image_raw'
         self.image_pub = rospy.Publisher('/test_frames', Image, queue_size=10)
         self._infoFileName = "/info.csv"
-        # print(11)
 
 
     def read(self, address):
 
-        # prms = []
         mainNum = 0
         totalNum = 0
         with open(address + self._infoFileName, newline='') as f:
@@ -65,39 +59,24 @@ class ProcessImageBags:
             # for k, row in enumerate(data):
             #     prms.append(row[2])
 
-        # print(4325)
         totalNum = len(data)
-        # print(prms)
         num = len(glob.glob(address + "/*.jpg"))
         kk = 0
         k = 0
         while k <= mainNum:
-            # if prms[k]:
             k += 1
             if not os.path.exists(address + "/img_" + str(k) + ".jpg"):
                 kk += 1
 
-        # ps = 0
-        # for kk, p in enumerate(prms):
-        #     if kk == 0:
-        #         continue
-        #     print(p)
-        #     if int(p) == 1:
-        #         ps += 1
-
-        # newRate = (mainNum-kk)/mainTime
-        # newRate = mainNum/mainTime
         newRate = num/float(mainTime)
         print('newRate', newRate)
 
         flag = True
         t1 = time.time()
         k = 1
-        # k = 993 + kk
         print('kk',kk)
         while k <= totalNum:
 
-            # if prms[k]:
             file = address + "/img_" + str(k) + ".jpg"
             if not os.path.exists(file):
                 k += 1
@@ -123,12 +102,6 @@ class ProcessImageBags:
 
         T = time.time() - t1
         print('elapsed time: ', T)
-        # for n in range(num-1):
-        # # for img in glob.glob(address + "/*.jpg"):
-        #     image = cv.imread(address + "/img_" + str(n+1) + ".jpg")
-        # #     cv.waitKey(30)
-        #     self.image_pub.publish(CvBridge().cv2_to_imgmsg(image, "bgr8"))
-        #     rospy.Rate(10).sleep()
 
 
     def show(self, address):
@@ -153,14 +126,8 @@ class ProcessImageBags:
         mainNum = len(glob.glob(address + "/*.jpg"))
         print(mainTime)
         rate = mainNum/float(mainTime)
-        # totalNum = len(data)
-        # t1 = time.time()
         k = 1
-        # k = 887 + kk
-        # G = sorted(glob.glob(address + "/*.jpg", key=os.path.getmtime))
-        # print(G)
         t1 = None
-        # t1 = time.time()
         kk = 0
         file1 = address + "/fe_" + str(kk) + ".jpg"
         img = cv.imread(file1)
@@ -172,17 +139,14 @@ class ProcessImageBags:
         # flag1 = True
         while k <= 5100:
             flag2 = False
-            # if prms[k]:
             file = address + "/file_" + str(k) + ".jpg"
             if not os.path.exists(file):
                 k += 1
                 continue
             image = cv.imread(file)
-            # print(k)
             dim = (692, 520)
             image = cv.resize(image, dim, interpolation = cv.INTER_AREA)
 
-            # if not (t1 is None) and time.time() - t1 > 4:
             if flag1 or (not (t1 is None) and (t2 - t1) > 4):
                 kk += 1
                 print(kk)
@@ -217,8 +181,6 @@ class ProcessImageBags:
 
     def write(self, bagFile):
 
-        # if self._finished:
-        #     return
         address = self.extractFileAddress(bagFile)
         name = self.getFileName(bagFile)
         bag = rosbag.Bag(bagFile)
@@ -247,9 +209,6 @@ class ProcessImageBags:
 
                 image = self.bridge.imgmsg_to_cv2(msg, "bgr8")
                 cv.imshow("subscribed video", image)
-                # if it == ff+1:
-                #     cv.putText(image, "AFTER END", \
-                #     (200, 200), cv.FONT_HERSHEY_PLAIN, 3, [0,0,255], 2)
 
                 filename1 = newAddress + "/img_%d.jpg"%it
                 cv.imwrite(filename1, image)
@@ -268,12 +227,10 @@ class ProcessImageBags:
                     flag = False
                     ff = it
 
-        dict = {'imgs': its, 'permissions': perms, 'time':ts}#, 'finalFrame':ff,\
-         # 'specialTime': specialEnd-start}
+        dict = {'imgs': its, 'permissions': perms, 'time':ts}
         df = pd.DataFrame(dict)
         fileName = newAddress + self._infoFileName
         df.to_csv(fileName)
-        # print(perms)
         print('write done')
 
 
@@ -308,33 +265,8 @@ class ProcessImageBags:
             if path[k] == '/':
                 end = k+1
                 break
-        # print(path[0:end])
         return path[0:end]
-        # if self._key == ord('q'):
-        #     # self._videoWriter.release()
-        #     cv.destroyAllWindows()
-        #     self._finished = True
 
-
-    # def imageCallback(self, data):
-    #
-    #     if self._finished:
-    #         return
-    #
-    #     image = self.bridge.imgmsg_to_cv2(data, "bgr8")
-    #     # self._videoWriter.write(image)
-    #
-    #     cv.imshow("subscribed video", image)
-    #
-    #     filename1 = "/home/hamidreza/project_82/frames/4/file_%d.jpg"%self._it
-    #     cv.imwrite(filename1, segment[0])
-    #
-    #     self._key = cv.waitKey(10)
-    #
-    #     if self._key == ord('q'):
-    #         # self._videoWriter.release()
-    #         cv.destroyAllWindows()
-    #         self._finished = True
 
 rospy.init_node('test_node', anonymous=True)
 
