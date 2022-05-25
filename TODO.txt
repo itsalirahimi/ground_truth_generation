@@ -1,0 +1,19 @@
+README.md
+71:[//]: # "TODO: For each data source (dedicated to a particular flight test), all the data, and the following algorithms' inputs and outputs must be read and written in a <save-dir>. The only input given to each algorithm must be a <save-dir> address parsed in the command-line"
+78:[//]: # "TODO: The marker ID poses should be written in a <params-file> inside the <save-dir>"
+80:[//]: # "TODO: The address to save the output must be passed with argparse"
+120:[//]: # "TODO: The 'odomPoses.csv' and 'markerPoses.csv' must be automatically read from the <save-dir>"
+135:[//]: # "TODO: Optimal parameter values must be saved in the <params-file> inside <save-dir>"
+142:[//]: # "TODO: Optimal parameter values must be read from the <params-file> inside <save-dir>"
+154:[//]: # "TODO: It must be saved in the <save-dir>"
+156:[//]: # "TODO: Save and overwrite the odometry poses plot in <save-dir>"
+164:[//]: # "TODO: Pass the address of front and side view camera videos to the 'writeVideos.py' using argparse"
+176:[//]: # "TODO: All of the above must be set by user in the <params-file> and read by code from it"
+202:[//]: # "TODO: The above corner pixel addresses are now copied from the terminal. Save them in the <params-file>. Change the code so that if these data are saved in the <params-file>, there is no need to crop the image and select the corners again"
+210:[//]: # "TODO: It must be saved in the <save-dir>"
+231:[//]: # "TODO: All of the above parameters (odom_gt_dt, object_dx, object_dy) must be set by user in the <params-file> and read by code from it"
+247:[//]: # "TODO: All of the above must be provided in the <save-dir>"
+253:[//]: # "TODO: The 'plotTrackingPath.py' must read data from <save-dir>"
+258:[//]: # "TODO: Save and overwrite the above all-data plot in <save-dir>"
+src/dronePoseDataOptimization.py
+27:        # TODO: There must be easier ways to get "x,y,z" by passing "t". Try

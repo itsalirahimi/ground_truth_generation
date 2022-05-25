@@ -196,7 +196,7 @@ class ColorThreshold:
 			return thresholdedImage, None
 
 		elif mode == Modes.GET:
-			# TODO: The class is incomplete; Tasks:
+			# To do: The class is incomplete; Tasks:
 			# 	- 	Save 4 different filter values for 4 different corner marker colors
 			# 	- 	Do the thresholding using pre-loaded 4 different parameter sets
 			# 		within the ROI and determine the pixel "coordinates" for each marker
