@@ -212,9 +212,13 @@ The data must be saved if the related code block within the function 'savePath' 
 
 ### 4. Visualize and save the pose of robot and object simultaneously
 
-1. Fisrt, save the bag images of drone camera:
+1. Fisrt, save the bag images of drone camera. To do so, clone [this repo](https://github.com/hamidrezafahimi/technical_utils). Navigate to the root of the cloned repo. Then:
 
 ```
+# Assuming you're in the root of 'technical_utils' repo
+
+cd process_bagfiles
+
 python processImageBags.py "write" "<save-dir>"
 ```
 
