@@ -17,7 +17,7 @@ The system is designed performing real flight tests during which the codes are d
 
 ## Setup
 
-The system is developed and tested in ubuntu 16.04. The installation of ROS (kinetic distro) is a basic requirement. The whole repository is placed within a ROS workspace. 
+The system is developed and tested in ubuntu 16.04. The installation of ROS (mine was `kinetic` distro) is a basic requirement. The whole repository is placed within a ROS workspace. 
 
 It is recommended to create a conda environment to install the necessary to install the softwares within. So start using:
 
@@ -68,17 +68,18 @@ roscore
 
 All the executable scripts lie inside *src* folder.
 
-[//]: # "TODO: For each data source (dedicated to a particular flight test), all the data, and the following algorithms' inputs and outputs must be read and written in a <save-dir>. The only input given to each algorithm must be a <save-dir> address parsed in the command-line"
+[//]:# "TODO: For each data source (dedicated to a particular flight test), all the data, and the following algorithms' inputs and outputs must be read and written in a <save-dir>. The only input given to each algorithm must be a <save-dir> address parsed in the command-line"
 
-[//]: # "The numerical parameters for each data source (a flight test) must be read and written in a 'params' file. Change the sturcture of the scripts so that there is no need to set any number inside modules or read and copy numbers from terminal outputs" 
+[//]:# "The numerical parameters for each data source (a flight test) must be read and written in a 'params' file. Change the sturcture of the scripts so that there is no need to set any number inside modules or read and copy numbers from terminal outputs" 
 
 ### 1. Log and Visualize the Robot's Odometry
 
 1. Write the marker ID poses inside the *telloGTGeneration.py* script.
-[//]: # "TODO: The marker ID poses should be written in a <params-file> inside the <save-dir>"
 Also, give the *telloGTGeneration.py* script an address to save the output,
-[//]: # "TODO: The address to save the output must be passed with argparse"
 and the address of drone camera calibration file.
+
+[//]:# "TODO: The marker ID poses should be written in a <params-file> inside the <save-dir>"
+[//]:# "TODO: The address to save the output must be passed with argparse"
 
 2. In a terminal:
 
@@ -91,10 +92,10 @@ python telloGTGeneration.py
 
 ```
 # Within <bag-file-dir> 
-[//]: # "The <bag-file-dir> must be the <save-dir>"
 # Requires ROS
 rosbag play <bag-file-address> 
 ```
+[//]:# "TODO: The <bag-file-dir> must be the <save-dir>"
 
 4. When the output image of *telloGTGeneration.py* is shown. Hit **A** key the first time you saw a marker in the robot's camera view. This position will be considered as the initial point of the drone pose.
 
@@ -117,12 +118,14 @@ Using a gradient descent approach, this feature corrects the drifted drone odome
 *NO ROS REQUIREMENT*
 
 1. Set the path to 'odomPoses.csv' and 'markerPoses.csv' in the *odpd* object definition of the class *OptimizeDronePoseData()*.
+
 [//]: # "TODO: The 'odomPoses.csv' and 'markerPoses.csv' must be automatically read from the <save-dir>"
 
 #### Finding the optimal parameters for drone odometry data correction
 
 2. In the end of the *dronePoseDataOptimization.py*, uncomment the call to *gradientDescentOptimize()* and comment the *visualize()* function. 
-[//]: # "The two separate functionalities must be passed with argparse, not commenting and uncommenting."
+
+[//]: # "TODO: The two separate functionalities must be passed with argparse, not commenting and uncommenting."
 
 3. Run:
 
@@ -132,6 +135,7 @@ python dronePoseDataOptimization.py
 
 **OUTPUT:** 
 * The log for the optimization in the terminal. Parameters are printed in each optimization step and the convergence procedure can be monitored.
+
 [//]: # "TODO: Optimal parameter values must be saved in the <params-file> inside <save-dir>"
 
 When desired (when the change in parameters is ignorable), kill the program and save the last printed parameters.
@@ -139,6 +143,7 @@ When desired (when the change in parameters is ignorable), kill the program and 
 #### Correcting the odometry data using the optimal parameters
 
 2. In the *__init__()* function of the class *OptimizeDronePoseData()*, set the optimal parameter values.
+
 [//]: # "TODO: Optimal parameter values must be read from the <params-file> inside <save-dir>"
 
 3. In the end of the *dronePoseDataOptimization.py*, comment the call to *gradientDescentOptimize()* and uncomment the *visualize()* function. 
@@ -151,8 +156,11 @@ python dronePoseDataOptimization.py
 
 **OUTPUT:** 
 * 'correctedPose.csv'    (The corrected odometry poses)
+
 [//]: # "TODO: It must be saved in the <save-dir>"
+
 * A plot showing the raw odometry poses, corrected odometry poses, and the Aruco marker poses (as scattered points)
+
 [//]: # "TODO: Save and overwrite the odometry poses plot in <save-dir>"
 
 
@@ -161,6 +169,7 @@ python dronePoseDataOptimization.py
 *NO ROS REQUIREMENT*
 
 1. After setting the address of front and side view camera videos in the *writeVideos.py*, run:
+
 [//]: # "TODO: Pass the address of front and side view camera videos to the 'writeVideos.py' using argparse"
 
 ```
@@ -173,6 +182,7 @@ The numbered frames of the two videos are saved in the two folders *frames_front
 * Initial frame number of each video Also
 * The field length and width
 * The fps of two videos (must be identical - default: 30)
+
 [//]: # "TODO: All of the above must be set by user in the <params-file> and read by code from it"
 
 3. Run:
@@ -215,9 +225,10 @@ The data must be saved if the related code block within the function 'savePath' 
 1. Fisrt, save the bag images of drone camera. To do so, clone [this repo](https://github.com/hamidrezafahimi/technical_utils). Navigate to the root of the cloned repo. Then:
 
 ```
+# Requires ROS
 # Assuming you're in the root of 'technical_utils' repo
 
-cd process_bagfiles
+cd ROS1/process_bagfiles
 
 python processImageBags.py "write" "<save-dir>"
 ```

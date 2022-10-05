@@ -1,4 +1,4 @@
 frames_front/
 frames_side/
 *.pyc
-src/__pycache__/
+*/__pycache__/
