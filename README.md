@@ -19,11 +19,13 @@ The system is designed performing real flight tests during which the codes are d
 
 The system is developed and tested in ubuntu 16.04. The installation of ROS (mine was `kinetic` distro) is a basic requirement. The whole repository is placed within a ROS workspace. 
 
-It is recommended to create a conda environment to install the necessary to install the softwares within. So start using:
+Having anaconda installed, it is recommended to create a conda environment to install the necessary packages to run the software within. So start using:
 
 ```
+export PATH=~/anaconda3/bin:$PATH
+source ~/anaconda3/etc/profile.d/conda.sh
 conda create --name gtg python=3.6
-conda activate gcndepth
+conda activate gtg
 ```
 
 Required python packages:
@@ -74,11 +76,12 @@ All the executable scripts lie inside *src* folder.
 
 ### 1. Log and Visualize the Robot's Odometry
 
-1. Write the marker ID poses inside the *telloGTGeneration.py* script.
-Also, give the *telloGTGeneration.py* script an address to save the output,
-and the address of drone camera calibration file.
+1. Write the marker ID poses inside the *telloGTGeneration.py* script. (Fill the `idPoses` variable like sample comments)
 
 [//]:# "TODO: The marker ID poses should be written in a <params-file> inside the <save-dir>"
+
+2. Give the *telloGTGeneration.py* script an address to save the output (<save-dir>), and the address of drone camera calibration file.
+
 [//]:# "TODO: The address to save the output must be passed with argparse"
 
 2. In a terminal:
@@ -166,7 +169,16 @@ python dronePoseDataOptimization.py
 
 ### 3. Log and Visualize the Object's Path
 
-*NO ROS REQUIREMENT*
+```
+tested with:
+
+python 		3.10.6
+opencv		4.5.5
+pandas		1.5.0
+
+NO ROS REQUIREMENT
+```
+
 
 1. After setting the address of front and side view camera videos in the *writeVideos.py*, run:
 
@@ -176,16 +188,19 @@ python dronePoseDataOptimization.py
 python writeVideos.py
 ```
 
-The numbered frames of the two videos are saved in the two folders *frames_front* and *frames_side* in the root. Compare and find the number of the initial frame of each video in a particular interval in which you want the object path to be recorded.
+The numbered frames of the two videos are saved in the two folders *frames_front* and *frames_side* in the root. 
 
-2. Set the followings in *objectGTGeneration.py*:
-* Initial frame number of each video Also
+2. Compare and find the number of the initial frame of each video in a particular interval in which you want the object path to be recorded.
+
+3. Set the followings in *objectGTGeneration.py*:
+
+* Initial frame number of each video 
 * The field length and width
-* The fps of two videos (must be identical - default: 30)
+* The fps of two videos (must be identical! - default: 30)
 
 [//]: # "TODO: All of the above must be set by user in the <params-file> and read by code from it"
 
-3. Run:
+4. Run:
 
 [//]: # "FIX: Runnig objectGTGeneration.py, a fake argument file must be passed. If not, there is an error"
 
@@ -193,7 +208,7 @@ The numbered frames of the two videos are saved in the two folders *frames_front
 python objectGTGeneration.py <fake-file>
 ```
 
-4. Following the instructions, 
+5. Following the instructions, 
 
 ```
 	a: quit
@@ -206,8 +221,8 @@ For each of front and side views, crop the tightest rectangle over the area in w
 
 	- top-left point in the field
 	- top-right point in the field
-	- down-left point in the field
 	- down-right point in the field
+	- down-left point in the field
 
 [//]: # "TODO: The above corner pixel addresses are now copied from the terminal. Save them in the <params-file>. Change the code so that if these data are saved in the <params-file>, there is no need to crop the image and select the corners again"
 

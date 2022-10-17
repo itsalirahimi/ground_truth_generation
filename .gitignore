@@ -2,3 +2,5 @@ frames_front/
 frames_side/
 *.pyc
 */__pycache__/
+*.png
+*.mp4

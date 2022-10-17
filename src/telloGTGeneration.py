@@ -3,14 +3,14 @@
 import rospy
 from sensor_msgs.msg import Image
 from nav_msgs.msg import Odometry
-import sys
-sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
+# import sys
+# sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
 from cv_bridge import CvBridge, CvBridgeError
 import cv2 as cv
 import numpy as np
-import scipy.spatial as ssp
-import matplotlib.pyplot as plt
-import time
+# import scipy.spatial as ssp
+# import matplotlib.pyplot as plt
+# import time
 import pandas as pd
 import os
 import math
@@ -264,31 +264,32 @@ class ArucoBasedDroneGroundTruthGeneration:
 
 
 	def isRotationMatrix(self, R):
-	    Rt = np.transpose(R)
-	    shouldBeIdentity = np.dot(Rt, R)
-	    I = np.identity(3, dtype=R.dtype)
-	    n = np.linalg.norm(I - shouldBeIdentity)
-	    return n < 1e-6
+		Rt = np.transpose(R)
+		shouldBeIdentity = np.dot(Rt, R)
+		I = np.identity(3, dtype=R.dtype)
+		n = np.linalg.norm(I - shouldBeIdentity)
+		return n < 1e-6
 
 
 
 	def rotationMatrixToEulerAngles(self, R):
-	    assert (self.isRotationMatrix(R))
 
-	    sy = math.sqrt(R[0, 0] * R[0, 0] + R[1, 0] * R[1, 0])
-
-	    singular = sy < 1e-6
-
-	    if not singular:
-	        x = math.atan2(R[2, 1], R[2, 2])
-	        y = math.atan2(-R[2, 0], sy)
-	        z = math.atan2(R[1, 0], R[0, 0])
-	    else:
-	        x = math.atan2(-R[1, 2], R[1, 1])
-	        y = math.atan2(-R[2, 0], sy)
-	        z = 0
-
-	    return np.array([x, y, z])
+		assert (self.isRotationMatrix(R))
+		
+		sy = math.sqrt(R[0, 0] * R[0, 0] + R[1, 0] * R[1, 0])
+		
+		singular = sy < 1e-6
+		
+		if not singular:
+			x = math.atan2(R[2, 1], R[2, 2])
+			y = math.atan2(-R[2, 0], sy)
+			z = math.atan2(R[1, 0], R[0, 0])
+		else:
+			x = math.atan2(-R[1, 2], R[1, 1])
+			y = math.atan2(-R[2, 0], sy)
+			z = 0
+			
+		return np.array([x, y, z])
 
 
 
@@ -449,7 +450,7 @@ class ArucoBasedDroneGroundTruthGeneration:
 rospy.init_node('telloGTGeneration', anonymous=True)
 
 agtg = ArucoBasedDroneGroundTruthGeneration(\
-	"/media/hamidreza/Local Disk/rosbag/93/tello_test/2022-03-10/16-33-13",
+	"/media/hamid/Data/NEW/tcs-9-3/data/tello_test/2022-03-10/16-16-18",
 	"../params/telloCam.yaml")
 # agtg.deleteOutliers()
 

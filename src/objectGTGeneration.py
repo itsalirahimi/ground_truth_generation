@@ -2,12 +2,17 @@
 
 import cv2 as cv
 import pandas as pd
-import math
-import yaml
+# import math
+# import yaml
 import numpy as np
-import time
+# import time
 from enum import Enum
 import os
+
+
+front_video_name = "VID_20220310_161511.mp4"
+side_video_name = "20220310_161504.mp4"
+videos_path = "/media/hamid/Data/NEW/tcs-9-3/data/tello_test/2022-03-10/"
 
 
 class Views(Enum):
@@ -18,26 +23,36 @@ class Views(Enum):
 
 class MovingObjectGroundTruthGeneration:
 
-	def __init__(self, videoFile_front, videoFile_side):
+	def __init__(self, path_to_vids, vid_f, vid_s):
 
 		# try:
 		# 	os.remove("objectPoses.csv")
 		# except:
 		# 	pass
-		# self._ROI_front = None
-		# self._fieldCorners_front = []
-		# self._ROI_side = None
-		# self._fieldCorners_side = []
+
+		self._vids_address = path_to_vids
+		videoFile_front = path_to_vids + vid_f 
+		videoFile_side = path_to_vids + vid_s
+
+		self._ROI_front = (6, 451, 1852, 185)
+		self._fieldCorners_front = [[584, 64], [1377, 75], [1846, 182], [39, 146]]
+		self._ROI_side = (1, 343, 1272, 123)
+		self._fieldCorners_side = [[11, 116], [478, 32], [973, 25], [1263, 119]]
+		self._fieldWidth = 24.2
+		self._fieldLength = 32
+		initFrame_f = 2041
+		initFrame_s = 2412
+
 
 		# TEST PARAMS:
-		self._ROI_front = (39, 564, 1850, 156)
-		self._fieldCorners_front = [[539, 41], [1347, 47], [1834, 148], [17, 133]]
-		self._ROI_side = (1, 374, 1279, 117)
-		self._fieldCorners_side = [[11, 108], [491, 21], [984, 15], [1276, 107]]
-		self._fieldWidth = 31.5
-		self._fieldLength = 23.4
-		initFrame_f = 25518
-		initFrame_s = 7063
+		# self._ROI_front = (39, 564, 1850, 156)
+		# self._fieldCorners_front = [[539, 41], [1347, 47], [1834, 148], [17, 133]]
+		# self._ROI_side = (1, 374, 1279, 117)
+		# self._fieldCorners_side = [[11, 108], [491, 21], [984, 15], [1276, 107]]
+		# self._fieldWidth = 31.5
+		# self._fieldLength = 23.4
+		# initFrame_f = 25518
+		# initFrame_s = 7063
 
 		# self._ROI_front = (581, 601, 1287, 125)
 		# self._fieldCorners_front = [[238, 35], [805, 46], [1266, 120], [9, 98]]
@@ -141,11 +156,14 @@ class MovingObjectGroundTruthGeneration:
 			self.initRectification(frame)
 
 		if view == Views.FRONT:
-			intrinsics = self._intrinsics_side
-			distortion = self._distortion_side
+
+			intrinsics = self._intrinsics_front
+			distortion = self._distortion_front
 			mx = self._mapx_front
 			my = self._mapy_front
+
 		elif view == Views.SIDE:
+			
 			intrinsics = self._intrinsics_side
 			distortion = self._distortion_side
 			mx = self._mapx_side
@@ -427,15 +445,31 @@ class MovingObjectGroundTruthGeneration:
 	def savePath(self, x, y):
 
 		if not x is None and not y is None:
-			print(x,y,self._time)
-			# df_marker = pd.DataFrame({'Xs':[x], 'Ys':[y], 'Time':[self._time]})
-			# df_marker.to_csv('objectPoses.csv', mode='a', index=False, header=False)
+			# print(x,y,self._time)
+			df_marker = pd.DataFrame({'Xs':[x], 'Ys':[y], 'Time':[self._time]})
+			df_marker.to_csv(self._vids_address+"objectPoses.csv", mode='a', index=False, header=False)
+	
+
+	# def extractFileAddress(self, path):
+		
+	# 	flag = True
+	# 	k = len(path)
+	# 	end = k-1
+		
+	# 	for char in path:
+	# 		k -= 1
+			
+	# 		if path[k] == '/':
+	# 			end = k+1
+	# 			break
+		
+	# 	return path[0:end]
+
 
 
 
 if __name__ == '__main__' :
-	mogtg = MovingObjectGroundTruthGeneration('/media/hamidreza/Local Disk/rosbag/93/tello_test/2022-03-03/VID_20220303_173033.mp4',
-		'/media/hamidreza/Local Disk/rosbag/93/tello_test/2022-03-03/20220303_174053.mp4')
+	mogtg = MovingObjectGroundTruthGeneration(videos_path, front_video_name, side_video_name)
 	# mogtg = MovingObjectGroundTruthGeneration('/media/hamidreza/Local Disk/rosbag/93/mavic_test/22.03.01/test_1.mp4',
 	# 	'/media/hamidreza/Local Disk/rosbag/93/mavic_test/22.03.01/test_1_side.mp4')
 	mogtg.runVideos()
