@@ -31,18 +31,14 @@ conda activate gtg
 Required python packages:
 
 ```
-opencv 			(v: 4.1.1)
+opencv 			(v: 4.6.0)
+contrib-python
 rospy			(v: )
-sensor_msgs		(v: )
-nav_msgs		(v: )
+rosbag			(v: )
 cv_bridge		(v: )
-numpy			(v: )
-scipy			(v: )
-matplotlib		(v: )
+sensor_msgs		(v: )
 pandas			(v: )
 yaml			(v: )
-rosbag			(v: )
-glob			(v: )
 ```
 
 ## Usage
@@ -169,15 +165,7 @@ python dronePoseDataOptimization.py
 
 ### 3. Log and Visualize the Object's Path
 
-```
-tested with:
-
-python 		3.10.6
-opencv		4.5.5
-pandas		1.5.0
-
-NO ROS REQUIREMENT
-```
+*NO ROS REQUIREMENT*
 
 
 1. After setting the address of front and side view camera videos in the *writeVideos.py*, run:
