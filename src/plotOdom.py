@@ -7,6 +7,8 @@ import time
 import pandas as pd
 
 
+saveDir = "/docker_ws"
+
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
@@ -42,8 +44,8 @@ def set_axes_equal(ax):
 
 while True:
 
-    odoms_df = pd.read_csv('/media/hamidreza/Local Disk/rosbag/93/tello_test/2022-03-10/16-33-13/odomPoses.csv', sep=',', header=None)
-    markers_df = pd.read_csv('/media/hamidreza/Local Disk/rosbag/93/tello_test/2022-03-10/16-33-13/rawMarkerPoses.csv', sep=',', header=None)
+    odoms_df = pd.read_csv(saveDir + "/odomPoses.csv", sep=',', header=None)
+    markers_df = pd.read_csv(saveDir + "/rawMarkerPoses.csv", sep=',', header=None)
     ax.cla()
     xs_o = odoms_df.values[:,0]
     ys_o = odoms_df.values[:,1]

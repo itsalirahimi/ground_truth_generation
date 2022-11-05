@@ -13,7 +13,7 @@ def writeDoubleVideoFrames(front, side, write = False, initFrame_f = 0, initFram
     ret_s = True
     fr = 0
     while ret_f and ret_s:
-        
+
         ret_f, frame_f = _cap_front.read()
         ret_s, frame_s = _cap_side.read()
         

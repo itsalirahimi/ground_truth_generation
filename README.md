@@ -31,14 +31,15 @@ conda activate gtg
 Required python packages:
 
 ```
-opencv 			(v: 4.6.0)
-contrib-python
-rospy			(v: )
-rosbag			(v: )
-cv_bridge		(v: )
-sensor_msgs		(v: )
-pandas			(v: )
-yaml			(v: )
+opencv 					(v: 4.6.0 and 4.5.5 tested)
+opencv-contrib-python
+rospy					(v: )
+rosbag					(v: )
+cv_bridge				(v: )
+sensor_msgs				(v: )
+pandas					(v: )
+yaml					(v: )
+matplotlib
 ```
 
 ## Usage
@@ -76,7 +77,9 @@ All the executable scripts lie inside *src* folder.
 
 [//]:# "TODO: The marker ID poses should be written in a <params-file> inside the <save-dir>"
 
-2. Give the *telloGTGeneration.py* script an address to save the output (<save-dir>), and the address of drone camera calibration file.
+2. Give the *telloGTGeneration.py* script an address to save the output (<save-dir>), and the address of drone camera calibration file. These are two parameters `saveAddress, calibFile` in the constructor of the class `ArucoBasedDroneGroundTruthGeneration`.
+
+3. Set the <save-dir> in `plotOdom.py` (The variable: `saveDir`).
 
 [//]:# "TODO: The address to save the output must be passed with argparse"
 
@@ -96,7 +99,7 @@ rosbag play <bag-file-address>
 ```
 [//]:# "TODO: The <bag-file-dir> must be the <save-dir>"
 
-4. When the output image of *telloGTGeneration.py* is shown. Hit **A** key the first time you saw a marker in the robot's camera view. This position will be considered as the initial point of the drone pose.
+4. When the output image of *telloGTGeneration.py* is shown. Hit **A** key the first time you saw a marker in the robot's camera view. This position will be considered as the initial point of the drone pose. Note that, the **A** key must be hit when a marker is detected.
 
 5. Meanwhile, in a new terminal, run the following so that you can see the poses obtained from markers along with the drone odometry plot.
 
@@ -116,13 +119,13 @@ Using a gradient descent approach, this feature corrects the drifted drone odome
 
 *NO ROS REQUIREMENT*
 
-1. Set the path to 'odomPoses.csv' and 'markerPoses.csv' in the *odpd* object definition of the class *OptimizeDronePoseData()*.
+1. In the `dronePoseDataOptimization.py` module, set the directory containing two files: `odomPoses.csv` and `markerPoses.csv`. (In the variable: `path`) 
 
 [//]: # "TODO: The 'odomPoses.csv' and 'markerPoses.csv' must be automatically read from the <save-dir>"
 
 #### Finding the optimal parameters for drone odometry data correction
 
-2. In the end of the *dronePoseDataOptimization.py*, uncomment the call to *gradientDescentOptimize()* and comment the *visualize()* function. 
+2. In the `dronePoseDataOptimization.py` module, in `__main__`, uncomment the call to *gradientDescentOptimize()* and comment the *visualize()* function. 
 
 [//]: # "TODO: The two separate functionalities must be passed with argparse, not commenting and uncommenting."
 
@@ -185,6 +188,7 @@ The numbered frames of the two videos are saved in the two folders *frames_front
 * Initial frame number of each video 
 * The field length and width
 * The fps of two videos (must be identical! - default: 30)
+* The address to the directory containing the both video files as well the name for each file (The variables `front_video_name, side_video_name, videos_path` in `objectGTGeneration.py`).
 
 [//]: # "TODO: All of the above must be set by user in the <params-file> and read by code from it"
 
@@ -193,7 +197,7 @@ The numbered frames of the two videos are saved in the two folders *frames_front
 [//]: # "FIX: Runnig objectGTGeneration.py, a fake argument file must be passed. If not, there is an error"
 
 ```
-python objectGTGeneration.py <fake-file>
+python objectGTGeneration.py
 ```
 
 5. Following the instructions, 
@@ -213,6 +217,35 @@ For each of front and side views, crop the tightest rectangle over the area in w
 	- down-left point in the field
 
 [//]: # "TODO: The above corner pixel addresses are now copied from the terminal. Save them in the <params-file>. Change the code so that if these data are saved in the <params-file>, there is no need to crop the image and select the corners again"
+
+6. If you are to work with a same couple of video files several times, you can change the following part of the `objectGTGeneration.py`:
+
+```
+self._ROI_front = None
+self._fieldCorners_front = []
+self._ROI_side = None
+self._fieldCorners_side = []
+self._fieldWidth = None
+self._fieldLength = None
+initFrame_f = None
+initFrame_s = None
+```
+
+To something like this:
+
+```
+self._ROI_front = (6, 451, 1852, 185)
+self._fieldCorners_front = [[584, 64], [1377, 75], [1846, 182], [39, 146]]
+self._ROI_side = (1, 343, 1272, 123)
+self._fieldCorners_side = [[11, 116], [478, 32], [973, 25], [1263, 119]]
+self._fieldWidth = 24.2
+self._fieldLength = 32
+initFrame_f = 31784
+initFrame_s = 33070
+```
+
+So that you don't need to set these parameters again and again. Note that the above data are printed in the terminal as soon as they are obtained (with the instructions of step 5) in the very first time.
+
 
 Hit **F**, so the pose estimation starts. 
 The data must be saved if the related code block within the function 'savePath' is active.
