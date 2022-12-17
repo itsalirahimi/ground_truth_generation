@@ -12,7 +12,7 @@ import os
 
 front_video_name = "VID_20220310_161511.mp4"
 side_video_name = "20220310_161504.mp4"
-videos_path = "/media/hamid/Data/NEW/tcs-9-3/data/tello_test/2022-03-10/"
+videos_path = "/docker_ws/videos/"
 
 
 class Views(Enum):
@@ -34,34 +34,24 @@ class MovingObjectGroundTruthGeneration:
 		videoFile_front = path_to_vids + vid_f 
 		videoFile_side = path_to_vids + vid_s
 
+		# self._ROI_front = None
+		# self._fieldCorners_front = []
+		# self._ROI_side = None
+		# self._fieldCorners_side = []
+		# self._fieldWidth = None
+		# self._fieldLength = None
+		# initFrame_f = None
+		# initFrame_s = None
+
 		self._ROI_front = (6, 451, 1852, 185)
 		self._fieldCorners_front = [[584, 64], [1377, 75], [1846, 182], [39, 146]]
 		self._ROI_side = (1, 343, 1272, 123)
 		self._fieldCorners_side = [[11, 116], [478, 32], [973, 25], [1263, 119]]
 		self._fieldWidth = 24.2
 		self._fieldLength = 32
-		initFrame_f = 2041
-		initFrame_s = 2412
+		initFrame_f = 31784
+		initFrame_s = 33070
 
-
-		# TEST PARAMS:
-		# self._ROI_front = (39, 564, 1850, 156)
-		# self._fieldCorners_front = [[539, 41], [1347, 47], [1834, 148], [17, 133]]
-		# self._ROI_side = (1, 374, 1279, 117)
-		# self._fieldCorners_side = [[11, 108], [491, 21], [984, 15], [1276, 107]]
-		# self._fieldWidth = 31.5
-		# self._fieldLength = 23.4
-		# initFrame_f = 25518
-		# initFrame_s = 7063
-
-		# self._ROI_front = (581, 601, 1287, 125)
-		# self._fieldCorners_front = [[238, 35], [805, 46], [1266, 120], [9, 98]]
-		# self._ROI_side = (2, 503, 1918, 170)
-		# self._fieldCorners_side = [[17, 107], [677, 49], [1236, 57], [1914, 157]]
-		# self._fieldWidth = 30.0
-		# self._fieldLength = 36.0
-		# initFrame_f = 0
-		# initFrame_s = 0
 
 		# CAMERA PARAMS:
 		self._intrinsics_front = None

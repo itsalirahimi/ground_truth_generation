@@ -323,8 +323,11 @@ class ArucoBasedDroneGroundTruthGeneration:
 
 				#-- Draw the detected marker and put a reference frame over it
 				# cv.aruco.drawDetectedMarkers(img, Cs)
-				cv.aruco.drawAxis(img, self._cameraMatrix, self._distortionMatrix,
-				 	rvec, tvec, 0.5)
+
+				# TODO: Uncomment this after debugging the corresponding error:
+				# cv.aruco.drawAxis(img, self._cameraMatrix, self._distortionMatrix,
+				#  	rvec, tvec, 0.5)
+
 				cv.imwrite(self._markerImagesDir+"/img{}.jpg".format(self._it_marker),
 					img)
 				#-- Obtain the rotation matrix tag->camera
@@ -450,8 +453,8 @@ class ArucoBasedDroneGroundTruthGeneration:
 rospy.init_node('telloGTGeneration', anonymous=True)
 
 agtg = ArucoBasedDroneGroundTruthGeneration(\
-	"/media/hamid/Data/NEW/tcs-9-3/data/tello_test/2022-03-10/16-16-18",
-	"../params/telloCam.yaml")
+	"/docker_ws",
+	"params/telloCam.yaml")
 # agtg.deleteOutliers()
 
 rospy.spin()

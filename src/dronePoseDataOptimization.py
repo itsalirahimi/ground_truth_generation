@@ -5,6 +5,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
+path = "/docker_ws"
+
 
 class PoseData:
 
@@ -40,7 +42,10 @@ class PoseData:
 
 class OptimizeDronePoseData:
 
-    def __init__(self, actualData, trueData):
+    def __init__(self, path):
+
+        actualData = path + "/odomPoses.csv" 
+        trueData = path + "/rawMarkerPoses.csv"
 
         self.actualData = PoseData(dataFrame = \
             pd.read_csv(actualData, sep=',', header=None))
@@ -194,6 +199,6 @@ class OptimizeDronePoseData:
 
 if __name__ == '__main__' :
 
-    odpd = OptimizeDronePoseData('odomPoses.csv', 'markerPoses.csv')
-    # odpd.gradientDescentOptimize()
-    odpd.visualize()
+    odpd = OptimizeDronePoseData(path)
+    odpd.gradientDescentOptimize()
+    # odpd.visualize()
