@@ -73,31 +73,35 @@ All the executable scripts lie inside *src* folder.
 
 ### 1. Log and Visualize the Robot's Odometry
 
+In this instruction, I consider a directory containing the bagfile (named `<bag-file>.bag`) as the `<save-dir>`, where the output of codes is saved as well. It must be passed to the codes in command-line.
+
 1. Write the marker ID poses inside the *telloGTGeneration.py* script. (Fill the `idPoses` variable like sample comments)
 
 [//]:# "TODO: The marker ID poses should be written in a <params-file> inside the <save-dir>"
 
-2. Give the *telloGTGeneration.py* script an address to save the output (<save-dir>), and the address of drone camera calibration file. These are two parameters `saveAddress, calibFile` in the constructor of the class `ArucoBasedDroneGroundTruthGeneration`.
+2. Check that the camera calibration `yaml` file for the tello camera exists in the `<repo-root>/params/` dir. 
 
-3. Set the <save-dir> in `plotOdom.py` (The variable: `saveDir`).
+<!-- 2. Give the *telloGTGeneration.py* script an address to save the output (<save-dir>), and the address of drone camera calibration file. These are two parameters `saveAddress, calibFile` in the constructor of the class `ArucoBasedDroneGroundTruthGeneration`. -->
 
-[//]:# "TODO: The address to save the output must be passed with argparse"
+<!-- 3. Set the <save-dir> in `plotOdom.py` (The variable: `saveDir`).
 
-2. In a terminal:
+[//]:# "TODO: The address to save the output must be passed with argparse" -->
 
-```
-# Requires ROS
-python telloGTGeneration.py 
-```
-
-3. In another terminal:
+3. In a terminal:
 
 ```
-# Within <bag-file-dir> 
-# Requires ROS
-rosbag play <bag-file-address> 
+# Requires ROS1
+
+python telloGTGeneration.py -p <save-dir>
 ```
-[//]:# "TODO: The <bag-file-dir> must be the <save-dir>"
+
+4. In another terminal:
+
+```
+# Requires ROS1
+
+rosbag play <save-dir>/<bag-file-address>.bag
+```
 
 4. When the output image of *telloGTGeneration.py* is shown. Hit **A** key the first time you saw a marker in the robot's camera view. This position will be considered as the initial point of the drone pose. Note that, the **A** key must be hit when a marker is detected.
 

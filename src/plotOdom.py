@@ -5,9 +5,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 import pandas as pd
+import os
 
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('-p', '--path', help='The Path to the Bag File.', dest='path')
+args, unknown = parser.parse_known_args()
 
-saveDir = "/docker_ws"
+saveDir = args.path
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
@@ -42,24 +47,28 @@ def set_axes_equal(ax):
     ax.set_zlim3d([z_middle - plot_radius, z_middle + plot_radius])
 
 
-while True:
+def run():
+	while True:
+		if not os.path.exists(saveDir + "/odomPoses.csv") or \
+		   not os.path.exists(saveDir + "/rawMarkerPoses.csv"):
+			return
+			
+		odoms_df = pd.read_csv(saveDir + "/odomPoses.csv", sep=',', header=None)
+		markers_df = pd.read_csv(saveDir + "/rawMarkerPoses.csv", sep=',', header=None)
+		ax.cla()
+		xs_o = odoms_df.values[:,0]
+		ys_o = odoms_df.values[:,1]
+		zs_o = odoms_df.values[:,2]
+		xs_m = markers_df.values[:,0]
+		ys_m = markers_df.values[:,1]
+		zs_m = markers_df.values[:,2]
+		ax.plot(xs_o, ys_o, zs_o, color='blue', linewidth=2)
+		ax.scatter(xs_m, ys_m, zs_m, color='red', linewidth=0)
 
-    odoms_df = pd.read_csv(saveDir + "/odomPoses.csv", sep=',', header=None)
-    markers_df = pd.read_csv(saveDir + "/rawMarkerPoses.csv", sep=',', header=None)
-    ax.cla()
-    xs_o = odoms_df.values[:,0]
-    ys_o = odoms_df.values[:,1]
-    zs_o = odoms_df.values[:,2]
-    xs_m = markers_df.values[:,0]
-    ys_m = markers_df.values[:,1]
-    zs_m = markers_df.values[:,2]
-    ax.plot(xs_o, ys_o, zs_o, color='blue', linewidth=2)
-    ax.scatter(xs_m, ys_m, zs_m, color='red', linewidth=0)
+		set_axes_equal(ax)
+		plt.draw()
+		ax.set_xlabel('X')
+		ax.set_ylabel('Y')
+		ax.set_zlabel('Z')
 
-    set_axes_equal(ax)
-    plt.draw()
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
-
-    plt.pause(10)
+		plt.pause(10)

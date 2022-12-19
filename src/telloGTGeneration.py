@@ -15,7 +15,19 @@ import pandas as pd
 import os
 import math
 from pathlib import Path
+import subprocess
+import sys
 
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('-p', '--path', help='The Path to the Bag File.', dest='path')
+args, unknown = parser.parse_known_args()
+
+rootOfRepo = subprocess.getoutput("git rev-parse --show-toplevel")
+sys.path.insert(1, args.path)
+import testData
+
+# print(testData.idPoses)
 
 ARUCO_DICT = {
 	"DICT_4X4_50": cv.aruco.DICT_4X4_50,
@@ -53,38 +65,40 @@ ARUCO_DICT = {
 # 	8:(4.5, 14.2) }
 
 # 03 . 10 :
-idPoses = { 1:(0, 0),
-	2:(-10, 14),
-	3:(-10, 9.5),
-	4:(0, 18.5),
-	5:(0, 14),
-	6:(0, 9.5),
-	7:(10, 18.5),
-	8:(10, 14) }
+# idPoses = { 1:(0, 0),
+# 	2:(-10, 14),
+# 	3:(-10, 9.5),
+# 	4:(0, 18.5),
+# 	5:(0, 14),
+# 	6:(0, 9.5),
+# 	7:(10, 18.5),
+# 	8:(10, 14) }
 
 
 class ArucoBasedDroneGroundTruthGeneration:
 
-	def __init__(self, saveAddress, calibFile):
+	def __init__(self, saveAddress):
+
+		calibFile = rootOfRepo + "/params/telloCam.yaml"
 
 		self._markerPosesFileName = saveAddress + "/rawMarkerPoses.csv"
 		self._newMarkerPosesFileName = saveAddress + "/cleanMarkerPoses.csv"
 		self._odomPosesFileName = saveAddress + "/odomPoses.csv"
 		self._markerImagesDir = saveAddress + "/markerDetectionFrames"
-		#
-		# if not os.path.exists(self._markerImagesDir):
-		# 	os.mkdir(self._markerImagesDir)
-		#
-		# if os.path.exists(self._odomPosesFileName):
-		# 	os.remove(self._odomPosesFileName)
-		#
-		# if os.path.exists(self._markerPosesFileName):
-		# 	os.remove(self._markerPosesFileName)
-		#
-		# markerImages = Path(self._markerImagesDir).iterdir()
-		# for mi in markerImages:
-		# 	fileName = str(mi)
-		# 	os.remove(fileName)
+		
+		if not os.path.exists(self._markerImagesDir):
+			os.mkdir(self._markerImagesDir)
+		
+		if os.path.exists(self._odomPosesFileName):
+			os.remove(self._odomPosesFileName)
+		
+		if os.path.exists(self._markerPosesFileName):
+			os.remove(self._markerPosesFileName)
+		
+		markerImages = Path(self._markerImagesDir).iterdir()
+		for mi in markerImages:
+			fileName = str(mi)
+			os.remove(fileName)
 
 		aDictName = "DICT_4X4_250"
 		self._arucoDict = cv.aruco.Dictionary_get(ARUCO_DICT[aDictName])
@@ -238,8 +252,8 @@ class ArucoBasedDroneGroundTruthGeneration:
 
 	def getArucoPose(self, id, pose):
 
-		if not id is None and int(id) in idPoses.keys():
-			return np.array([idPoses[int(id)][0] + pose[0], idPoses[int(id)][1]\
+		if not id is None and int(id) in testData.idPoses.keys():
+			return np.array([testData.idPoses[int(id)][0] + pose[0], testData.idPoses[int(id)][1]\
 			 	+ pose[1], pose[2]])
 		else:
 			return None
@@ -307,7 +321,7 @@ class ArucoBasedDroneGroundTruthGeneration:
 			Cs = []
 			Is = []
 			for k,i in enumerate(ids):
-				if int(i) in idPoses.keys():
+				if int(i) in testData.idPoses.keys():
 					Is.append(i)
 					Cs.append(corners[k])
 
@@ -325,8 +339,10 @@ class ArucoBasedDroneGroundTruthGeneration:
 				# cv.aruco.drawDetectedMarkers(img, Cs)
 
 				# TODO: Uncomment this after debugging the corresponding error:
-				# cv.aruco.drawAxis(img, self._cameraMatrix, self._distortionMatrix,
+				# cv.aruco.drawAxes(img, self._cameraMatrix, self._distortionMatrix,
 				#  	rvec, tvec, 0.5)
+				cv.drawFrameAxes(img, self._cameraMatrix, self._distortionMatrix,
+				 	rvec, tvec, 0.5)
 
 				cv.imwrite(self._markerImagesDir+"/img{}.jpg".format(self._it_marker),
 					img)
@@ -452,9 +468,6 @@ class ArucoBasedDroneGroundTruthGeneration:
 
 rospy.init_node('telloGTGeneration', anonymous=True)
 
-agtg = ArucoBasedDroneGroundTruthGeneration(\
-	"/docker_ws",
-	"params/telloCam.yaml")
+agtg = ArucoBasedDroneGroundTruthGeneration(args.path)
 # agtg.deleteOutliers()
-
 rospy.spin()
