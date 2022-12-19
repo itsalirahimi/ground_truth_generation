@@ -71,53 +71,74 @@ All the executable scripts lie inside *src* folder.
 
 [//]:# "The numerical parameters for each data source (a flight test) must be read and written in a 'params' file. Change the sturcture of the scripts so that there is no need to set any number inside modules or read and copy numbers from terminal outputs" 
 
+*NOTE:* All the commands must be run in the root of the repository.
+
+*NOTE:* In this instruction, I consider a directory containing the bagfile (named `<bag-file>.bag`) as the `<save-dir>`, where the output of codes is saved as well. It must be passed to the codes in command-line. 
+
+
 ### 1. Log and Visualize the Robot's Odometry
 
-In this instruction, I consider a directory containing the bagfile (named `<bag-file>.bag`) as the `<save-dir>`, where the output of codes is saved as well. It must be passed to the codes in command-line.
+**Prerequisites:**
 
-1. Write the marker ID poses inside the *telloGTGeneration.py* script. (Fill the `idPoses` variable like sample comments)
+* Within `<save-dir>`, there must be a script named `testData.py` containing the positions of markers as a python dictionary.
 
-[//]:# "TODO: The marker ID poses should be written in a <params-file> inside the <save-dir>"
+* Check that the tello camera calibration file named `telloCam.yaml` exists in the `params/` directory. 
 
-2. Check that the camera calibration `yaml` file for the tello camera exists in the `<repo-root>/params/` dir. 
+**Guide:**
 
-<!-- 2. Give the *telloGTGeneration.py* script an address to save the output (<save-dir>), and the address of drone camera calibration file. These are two parameters `saveAddress, calibFile` in the constructor of the class `ArucoBasedDroneGroundTruthGeneration`. -->
-
-<!-- 3. Set the <save-dir> in `plotOdom.py` (The variable: `saveDir`).
-
-[//]:# "TODO: The address to save the output must be passed with argparse" -->
-
-3. In a terminal:
+1. Open the file `bash/droneLog.sh`. Replace the `<save-dir>` and `<bag-file>.bag` in the following two lines:
 
 ```
-# Requires ROS1
-
-python telloGTGeneration.py -p <save-dir>
+export savDr=<save-dir>
+export bagFile=<bag-file>.bag
 ```
 
-4. In another terminal:
+2. Run:
 
 ```
-# Requires ROS1
+cd ground_truth_generation
 
-rosbag play <save-dir>/<bag-file-address>.bag
+./bash/droneLog.sh
 ```
 
-4. When the output image of *telloGTGeneration.py* is shown. Hit **A** key the first time you saw a marker in the robot's camera view. This position will be considered as the initial point of the drone pose. Note that, the **A** key must be hit when a marker is detected.
+3. When the output image of *telloGTGeneration.py* is shown. Hit **A** key the first time you saw a marker in the robot's camera view. This position will be considered as the initial point of the drone pose. Note that, the **A** key must be hit when a marker is detected. Meanwhile, you can see the poses obtained from markers (red) along with the drone odometry plot (blue).
 
-5. Meanwhile, in a new terminal, run the following so that you can see the poses obtained from markers along with the drone odometry plot.
-
-```
-# Does not require ROS
-python plotOdom.py
-```
 
 **OUTPUT:** 
 * <save-dir>/odomPoses.csv
 * <save-dir>/rawMarkerPoses.csv
 * All the drone images in which the markers are visible in <save-dir>/markerDetectionFrames
 
-### 2. Optimize the drone's path using the aruco markers' data 
+
+### 2. Remove outliers from drone pose data
+
+There are outlier in pose data obtained from both drone odometry and marker data. To remove the outliers, do the followings:
+
+#### For Marker Pose Data:
+
+1. After performing the instructions to save drone pose data, open the file `bash/droneLog.sh` and replace the `<save-dir>`:
+
+```
+export savDr=<save-dir>
+```
+
+2. In root, run:
+
+```
+./bash/removeMarkerOutliers.sh
+```
+
+3. The frames in which pose data is extracted from detected markers will be shown. Based on the appearance of the 3-axes, where they don't make sense, press **d**. Otherwise, press any key until the images are finished.
+
+**OUTPUT:**
+* <save-dir>/cleanMarkerPoses.csv
+
+#### For Drone Odometry:
+
+...
+
+
+### 3. Optimize the drone's path using the aruco markers' data 
 
 Using a gradient descent approach, this feature corrects the drifted drone odometry poses to match the reliable Aruco pose data as much as possible.
 
@@ -170,7 +191,7 @@ python dronePoseDataOptimization.py
 [//]: # "TODO: Save and overwrite the odometry poses plot in <save-dir>"
 
 
-### 3. Log and Visualize the Object's Path
+### 4. Log and Visualize the Object's Path
 
 *NO ROS REQUIREMENT*
 
@@ -260,7 +281,7 @@ The data must be saved if the related code block within the function 'savePath' 
 [//]: # "TODO: It must be saved in the <save-dir>"
 
 
-### 4. Visualize and save the pose of robot and object simultaneously
+### 5. Visualize and save the pose of robot and object simultaneously
 
 1. Fisrt, save the bag images of drone camera. To do so, clone [this repo](https://github.com/hamidrezafahimi/technical_utils). Navigate to the root of the cloned repo. Then:
 

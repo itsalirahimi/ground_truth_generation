@@ -3,14 +3,9 @@
 import rospy
 from sensor_msgs.msg import Image
 from nav_msgs.msg import Odometry
-# import sys
-# sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
 from cv_bridge import CvBridge, CvBridgeError
 import cv2 as cv
 import numpy as np
-# import scipy.spatial as ssp
-# import matplotlib.pyplot as plt
-# import time
 import pandas as pd
 import os
 import math
@@ -27,7 +22,6 @@ rootOfRepo = subprocess.getoutput("git rev-parse --show-toplevel")
 sys.path.insert(1, args.path)
 import testData
 
-# print(testData.idPoses)
 
 ARUCO_DICT = {
 	"DICT_4X4_50": cv.aruco.DICT_4X4_50,
@@ -49,35 +43,10 @@ ARUCO_DICT = {
 	"DICT_ARUCO_ORIGINAL": cv.aruco.DICT_ARUCO_ORIGINAL
 }
 
-# idPoses = {1: (0, 0),
-# 	3: (-6.8, 0),
-# 	2: (-6.8, 7.1),
-# 	4: (-17.3, 7.1)}
-
-# 03 . 03 :
-# idPoses = { 1:(0, 0),
-# 	2:(12.7, 0.25),
-# 	3:(-0.4, 14.2),
-# 	4:(13, 25.4),
-# 	5:(-8.9, 14.2),
-# 	6:(12, 14.2),
-# 	7:(0, 25.4),
-# 	8:(4.5, 14.2) }
-
-# 03 . 10 :
-# idPoses = { 1:(0, 0),
-# 	2:(-10, 14),
-# 	3:(-10, 9.5),
-# 	4:(0, 18.5),
-# 	5:(0, 14),
-# 	6:(0, 9.5),
-# 	7:(10, 18.5),
-# 	8:(10, 14) }
-
 
 class ArucoBasedDroneGroundTruthGeneration:
 
-	def __init__(self, saveAddress):
+	def __init__(self, saveAddress,  outlierRemovalMode=False):
 
 		calibFile = rootOfRepo + "/params/telloCam.yaml"
 
@@ -86,19 +55,8 @@ class ArucoBasedDroneGroundTruthGeneration:
 		self._odomPosesFileName = saveAddress + "/odomPoses.csv"
 		self._markerImagesDir = saveAddress + "/markerDetectionFrames"
 		
-		if not os.path.exists(self._markerImagesDir):
-			os.mkdir(self._markerImagesDir)
-		
-		if os.path.exists(self._odomPosesFileName):
-			os.remove(self._odomPosesFileName)
-		
-		if os.path.exists(self._markerPosesFileName):
-			os.remove(self._markerPosesFileName)
-		
-		markerImages = Path(self._markerImagesDir).iterdir()
-		for mi in markerImages:
-			fileName = str(mi)
-			os.remove(fileName)
+		if not outlierRemovalMode:
+			self.removeOldLogs()
 
 		aDictName = "DICT_4X4_250"
 		self._arucoDict = cv.aruco.Dictionary_get(ARUCO_DICT[aDictName])
@@ -135,6 +93,25 @@ class ArucoBasedDroneGroundTruthGeneration:
 			self.image_sub = rospy.Subscriber("/tello/camera/image_raw", Image,
 				self.imageCallback)
 			self.bridge = CvBridge()
+
+
+	def removeOldLogs(self):
+		
+		print("----- Removing last saved data from save directory -----")
+
+		if not os.path.exists(self._markerImagesDir):
+				os.mkdir(self._markerImagesDir)
+			
+		if os.path.exists(self._odomPosesFileName):
+			os.remove(self._odomPosesFileName)
+		
+		if os.path.exists(self._markerPosesFileName):
+			os.remove(self._markerPosesFileName)
+		
+		markerImages = Path(self._markerImagesDir).iterdir()
+		for mi in markerImages:
+			fileName = str(mi)
+			os.remove(fileName)
 
 
 	def odomCallback(self, data=None):
@@ -363,6 +340,7 @@ class ArucoBasedDroneGroundTruthGeneration:
 
 	def deleteOutliers(self):
 
+		print("Deleting Outliers Started.")
 		df = pd.read_csv(self._markerPosesFileName, sep=',', header=None)
 		markerImages = sorted(Path(self._markerImagesDir).iterdir(), key=os.path.getmtime)
 		num = len(markerImages)
@@ -383,6 +361,7 @@ class ArucoBasedDroneGroundTruthGeneration:
 				toBeRemoved.append(k)
 
 		print(toBeRemoved)
+		df.drop(df.index[toBeRemoved], inplace=True)
 		df.to_csv(self._newMarkerPosesFileName, index=False, header=False)
 		print("Deleting Outliers Done!")
 
@@ -465,9 +444,10 @@ class ArucoBasedDroneGroundTruthGeneration:
 		return DCM
 
 
+if __name__ == '__main__' :
 
-rospy.init_node('telloGTGeneration', anonymous=True)
+	rospy.init_node('telloGTGeneration', anonymous=True)
 
-agtg = ArucoBasedDroneGroundTruthGeneration(args.path)
-# agtg.deleteOutliers()
-rospy.spin()
+	agtg = ArucoBasedDroneGroundTruthGeneration(args.path)
+
+	rospy.spin()
