@@ -86,22 +86,17 @@ All the executable scripts lie inside *src* folder.
 
 **Guide:**
 
-1. Open the file `bash/droneLog.sh`. Replace the `<save-dir>` and `<bag-file>.bag` in the following two lines:
+1. Run:
 
-```
-export savDr=<save-dir>
-export bagFile=<bag-file>.bag
-```
-
-2. Run:
+[//]:# "The name of the conda environment in my system is 'bd_env' and so is the neme inside the bash-file. It must be 'gtg' as described here"
 
 ```
 cd ground_truth_generation
 
-./bash/droneLog.sh
+./bash/droneLog.sh <save-dir> <bag-file>.bag
 ```
 
-3. When the output image of *telloGTGeneration.py* is shown. Hit **A** key the first time you saw a marker in the robot's camera view. This position will be considered as the initial point of the drone pose. Note that, the **A** key must be hit when a marker is detected. Meanwhile, you can see the poses obtained from markers (red) along with the drone odometry plot (blue).
+2. When the output image of *telloGTGeneration.py* is shown. Hit **A** key the first time you saw a marker in the robot's camera view. This position will be considered as the initial point of the drone pose. Note that, the **A** key must be hit when a marker is detected. Meanwhile, you can see the poses obtained from markers (red) along with the drone odometry plot (blue).
 
 
 **OUTPUT:** 
@@ -116,19 +111,13 @@ There are outlier in pose data obtained from both drone odometry and marker data
 
 #### For Marker Pose Data:
 
-1. After performing the instructions to save drone pose data, open the file `bash/droneLog.sh` and replace the `<save-dir>`:
+1. After performing the instructions to save drone pose data, in root, run:
 
 ```
-export savDr=<save-dir>
+./bash/removeMarkerOutliers.sh <save-dir>
 ```
 
-2. In root, run:
-
-```
-./bash/removeMarkerOutliers.sh
-```
-
-3. The frames in which pose data is extracted from detected markers will be shown. Based on the appearance of the 3-axes, where they don't make sense, press **d**. Otherwise, press any key until the images are finished.
+2. The frames in which pose data is extracted from detected markers will be shown. Based on the appearance of the 3-axes, where they don't make sense, press **d**. Otherwise, press any key until the images are finished.
 
 **OUTPUT:**
 * <save-dir>/cleanMarkerPoses.csv
@@ -195,6 +184,7 @@ python dronePoseDataOptimization.py
 
 *NO ROS REQUIREMENT*
 
+#### Prerequisite: Find and Set the Required Parameters
 
 1. After setting the address of front and side view camera videos in the *writeVideos.py*, run:
 
@@ -208,21 +198,33 @@ The numbered frames of the two videos are saved in the two folders *frames_front
 
 2. Compare and find the number of the initial frame of each video in a particular interval in which you want the object path to be recorded.
 
-3. Set the followings in *objectGTGeneration.py*:
+3. Set the followings in a python script named *testData.py* inside <save-dir> (where the output is to be saved):
 
 * Initial frame number of each video 
 * The field length and width
 * The fps of two videos (must be identical! - default: 30)
-* The address to the directory containing the both video files as well the name for each file (The variables `front_video_name, side_video_name, videos_path` in `objectGTGeneration.py`).
+<!-- * The address to the directory containing the both video files as well as the name for each file (The variables `front_video_name, side_video_name, videos_path` in `objectGTGeneration.py`). -->
+
+In this step, the file *testData.py* must look like this (with different numbers):
+
+```
+ROI_front = None
+fieldCorners_front = []
+ROI_side = None
+fieldCorners_side = []
+fieldWidth = 24.2
+fieldLength = 32
+initFrame_f = 31784
+initFrame_s = 33070
+fps = 30
+```
 
 [//]: # "TODO: All of the above must be set by user in the <params-file> and read by code from it"
 
 4. Run:
 
-[//]: # "FIX: Runnig objectGTGeneration.py, a fake argument file must be passed. If not, there is an error"
-
 ```
-python objectGTGeneration.py
+python objectGTGeneration.py -p <save-dir> -f <front-video-dir> -s <side-video-dir>
 ```
 
 5. Following the instructions, 
@@ -243,36 +245,25 @@ For each of front and side views, crop the tightest rectangle over the area in w
 
 [//]: # "TODO: The above corner pixel addresses are now copied from the terminal. Save them in the <params-file>. Change the code so that if these data are saved in the <params-file>, there is no need to crop the image and select the corners again"
 
-6. If you are to work with a same couple of video files several times, you can change the following part of the `objectGTGeneration.py`:
+6. Now, save the terminal output of your clicks so that the next time you don't need to do the step 5 again. In `testData.py` change the following part:
 
 ```
-self._ROI_front = None
-self._fieldCorners_front = []
-self._ROI_side = None
-self._fieldCorners_side = []
-self._fieldWidth = None
-self._fieldLength = None
-initFrame_f = None
-initFrame_s = None
+ROI_front = None
+fieldCorners_front = []
+ROI_side = None
+fieldCorners_side = []
 ```
 
 To something like this:
 
 ```
-self._ROI_front = (6, 451, 1852, 185)
-self._fieldCorners_front = [[584, 64], [1377, 75], [1846, 182], [39, 146]]
-self._ROI_side = (1, 343, 1272, 123)
-self._fieldCorners_side = [[11, 116], [478, 32], [973, 25], [1263, 119]]
-self._fieldWidth = 24.2
-self._fieldLength = 32
-initFrame_f = 31784
-initFrame_s = 33070
+ROI_front = (6, 451, 1852, 185)
+fieldCorners_front = [[584, 64], [1377, 75], [1846, 182], [39, 146]]
+ROI_side = (1, 343, 1272, 123)
+fieldCorners_side = [[11, 116], [478, 32], [973, 25], [1263, 119]]
 ```
 
-So that you don't need to set these parameters again and again. Note that the above data are printed in the terminal as soon as they are obtained (with the instructions of step 5) in the very first time.
-
-
-Hit **F**, so the pose estimation starts. 
+7. Hit **F**, so the pose estimation starts. 
 The data must be saved if the related code block within the function 'savePath' is active.
 
 **OUTPUT:** 
@@ -289,7 +280,7 @@ The data must be saved if the related code block within the function 'savePath' 
 # Requires ROS
 # Assuming you're in the root of 'technical_utils' repo
 
-cd ROS1/process_bagfiles
+cd ROS/ROS1/process_bagfiles
 
 python processImageBags.py "write" "<save-dir>"
 ```

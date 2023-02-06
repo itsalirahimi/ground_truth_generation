@@ -19,6 +19,7 @@ parser.add_argument('-p', '--path', help='The Path to the Bag File.', dest='path
 args, unknown = parser.parse_known_args()
 
 rootOfRepo = subprocess.getoutput("git rev-parse --show-toplevel")
+
 sys.path.insert(1, args.path)
 import testData
 
@@ -100,7 +101,7 @@ class ArucoBasedDroneGroundTruthGeneration:
 		print("----- Removing last saved data from save directory -----")
 
 		if not os.path.exists(self._markerImagesDir):
-				os.mkdir(self._markerImagesDir)
+			os.mkdir(self._markerImagesDir)
 			
 		if os.path.exists(self._odomPosesFileName):
 			os.remove(self._odomPosesFileName)

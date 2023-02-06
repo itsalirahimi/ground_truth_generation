@@ -7,12 +7,22 @@ import pandas as pd
 import numpy as np
 # import time
 from enum import Enum
-import os
+# import os
+import sys
 
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('-p', '--path', help='The Path to Save the Output.', dest='path')
+parser.add_argument('-f', '--front', help='The Path to the Front File.', dest='front')
+parser.add_argument('-s', '--side', help='The Path to the Side File.', dest='side')
+args, unknown = parser.parse_known_args()
 
-front_video_name = "VID_20220310_161511.mp4"
-side_video_name = "20220310_161504.mp4"
-videos_path = "/docker_ws/videos/"
+sys.path.insert(1, args.path)
+import testData
+
+# front_video_name = "VID_20220310_161511.mp4"
+# side_video_name = "20220310_161504.mp4"
+# videos_path = "/docker_ws/videos/"
 
 
 class Views(Enum):
@@ -23,16 +33,16 @@ class Views(Enum):
 
 class MovingObjectGroundTruthGeneration:
 
-	def __init__(self, path_to_vids, vid_f, vid_s):
+	def __init__(self, save_dir, vid_f, vid_s):
 
 		# try:
 		# 	os.remove("objectPoses.csv")
 		# except:
 		# 	pass
 
-		self._vids_address = path_to_vids
-		videoFile_front = path_to_vids + vid_f 
-		videoFile_side = path_to_vids + vid_s
+		self._saveDir = save_dir
+		videoFile_front = vid_f 
+		videoFile_side = vid_s
 
 		# self._ROI_front = None
 		# self._fieldCorners_front = []
@@ -43,15 +53,24 @@ class MovingObjectGroundTruthGeneration:
 		# initFrame_f = None
 		# initFrame_s = None
 
-		self._ROI_front = (6, 451, 1852, 185)
-		self._fieldCorners_front = [[584, 64], [1377, 75], [1846, 182], [39, 146]]
-		self._ROI_side = (1, 343, 1272, 123)
-		self._fieldCorners_side = [[11, 116], [478, 32], [973, 25], [1263, 119]]
-		self._fieldWidth = 24.2
-		self._fieldLength = 32
-		initFrame_f = 31784
-		initFrame_s = 33070
+		# self._ROI_front = (6, 451, 1852, 185)
+		# self._fieldCorners_front = [[584, 64], [1377, 75], [1846, 182], [39, 146]]
+		# self._ROI_side = (1, 343, 1272, 123)
+		# self._fieldCorners_side = [[11, 116], [478, 32], [973, 25], [1263, 119]]
+		# self._fieldWidth = 24.2
+		# self._fieldLength = 32
+		# initFrame_f = 31784
+		# initFrame_s = 33070
 
+		self._ROI_front = testData.ROI_front
+		self._fieldCorners_front = testData.fieldCorners_front
+		self._ROI_side = testData.ROI_side
+		self._fieldCorners_side = testData.fieldCorners_side
+		self._fieldWidth = testData.fieldWidth
+		self._fieldLength = testData.fieldLength
+		initFrame_f = testData.initFrame_f
+		initFrame_s = testData.initFrame_s
+		self._fps = testData.fps
 
 		# CAMERA PARAMS:
 		self._intrinsics_front = None
@@ -76,7 +95,6 @@ class MovingObjectGroundTruthGeneration:
 		self._cap_front.set(1,initFrame_f)
 		self._cap_side = cv.VideoCapture(videoFile_side)
 		self._cap_side.set(1,initFrame_s)
-		self._fps = 30
 		self._time = 0
 
 		# UI PARAMS:
@@ -146,14 +164,12 @@ class MovingObjectGroundTruthGeneration:
 			self.initRectification(frame)
 
 		if view == Views.FRONT:
-
 			intrinsics = self._intrinsics_front
 			distortion = self._distortion_front
 			mx = self._mapx_front
 			my = self._mapy_front
 
 		elif view == Views.SIDE:
-			
 			intrinsics = self._intrinsics_side
 			distortion = self._distortion_side
 			mx = self._mapx_side
@@ -437,7 +453,7 @@ class MovingObjectGroundTruthGeneration:
 		if not x is None and not y is None:
 			# print(x,y,self._time)
 			df_marker = pd.DataFrame({'Xs':[x], 'Ys':[y], 'Time':[self._time]})
-			df_marker.to_csv(self._vids_address+"objectPoses.csv", mode='a', index=False, header=False)
+			df_marker.to_csv(self._saveDir+"/objectPoses.csv", mode='a', index=False, header=False)
 	
 
 	# def extractFileAddress(self, path):
@@ -459,7 +475,8 @@ class MovingObjectGroundTruthGeneration:
 
 
 if __name__ == '__main__' :
-	mogtg = MovingObjectGroundTruthGeneration(videos_path, front_video_name, side_video_name)
+	mogtg = MovingObjectGroundTruthGeneration(args.path, args.front, args.side)
+	# mogtg = MovingObjectGroundTruthGeneration(videos_path, front_video_name, side_video_name)
 	# mogtg = MovingObjectGroundTruthGeneration('/media/hamidreza/Local Disk/rosbag/93/mavic_test/22.03.01/test_1.mp4',
 	# 	'/media/hamidreza/Local Disk/rosbag/93/mavic_test/22.03.01/test_1_side.mp4')
 	mogtg.runVideos()
