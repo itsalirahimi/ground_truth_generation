@@ -130,8 +130,8 @@ class MovingObjectGroundTruthGeneration:
 		self._last_front_vx = None
 		self._last_side_x = None
 		self._last_side_vx = None
-		self._maxPixelMovement = 50
-		self._motionModelStartFrame = 30
+		self._maxPixelMovement = 500
+		self._motionModelStartFrame = 30000
 
 
 	def initRectification(self, image):

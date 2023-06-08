@@ -227,6 +227,12 @@ fps = 30
 python objectGTGeneration.py -p <save-dir> -f <front-video-dir> -s <side-video-dir>
 ```
 
+sample:
+
+```
+python3 objectGTGeneration.py -p ~/d/BACKUPED/tcs-9-3/data/tello_test/2022-03-10/16-16-18-clean-raw-odom -f ~/d/BACKUPED/tcs-9-3/data/tello_test/2022-03-10/VID_20220310_161511.mp4 -s ~/d/BACKUPED/tcs-9-3/data/tello_test/2022-03-10/20220310_161504.mp4
+```
+
 5. Following the instructions, 
 
 ```
@@ -270,6 +276,28 @@ The data must be saved if the related code block within the function 'savePath' 
 * objectPoses.csv
 
 [//]: # "TODO: It must be saved in the <save-dir>"
+
+#### Removing Outliers from Object Pose Data
+
+```
+python3 cleanObjectPoses.py -i <path-to-raw-object-poses>.csv -o <path-to-save-directory>
+```
+
+Instructions to use:
+
+```
+any key except options: next
+d: This point is noise. Remove it
+s: Split a separated output file until this point
+q: Quite
+```
+
+
+Sample:
+
+```
+python3 cleanObjectPoses.py -i /home/hamid/d/BACKUPED/tcs-9-3/data/tello_test/2022-03-10/16-16-18-clean-raw-odom/out.csv -o /home/hamid/d/BACKUPED/tcs-9-3/data/tello_test/2022-03-10/16-16-18-clean-raw-odom
+```
 
 
 ### 5. Visualize and save the pose of robot and object simultaneously
