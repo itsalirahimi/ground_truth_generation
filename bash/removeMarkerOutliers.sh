@@ -10,6 +10,6 @@ export repoRoot=`git rev-parse --show-toplevel`
 export PATH=~/anaconda3/bin:$PATH
 source ~/anaconda3/etc/profile.d/conda.sh
 source /opt/ros/noetic/setup.bash
-conda activate bdenv
+conda activate gtg
 set -e
 python ${repoRoot}/src/removeMarkerPoseOutliers.py -p `echo ${savDr}`

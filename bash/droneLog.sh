@@ -16,13 +16,13 @@ export PATH=~/anaconda3/bin:$PATH
 source ~/anaconda3/etc/profile.d/conda.sh
 source /opt/ros/noetic/setup.bash
 roscore &
-conda activate bdenv
+conda activate gtg
 set -e
-export LD_LIBRARY_PATH=/opt/ros/noetic/lib/:${HOME}/anaconda3/envs/bdenv/bin/python
+export LD_LIBRARY_PATH=/opt/ros/noetic/lib/:${HOME}/anaconda3/envs/gtg/bin/python
 python ${repoRoot}/src/telloGTGeneration.py -p `echo ${savDr}` &
 conda deactivate
 cd `echo ${savDr}`
 source /opt/ros/noetic/setup.bash
 rosbag play `echo ${bagFile}` &
-conda activate bdenv
+conda activate gtg
 python ${repoRoot}/src/plotOdom.py -p `echo ${savDr}`

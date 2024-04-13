@@ -5,7 +5,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-path = "/docker_ws"
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('-p', '--path', help='The Path to the Bag File.', dest='path')
+args, unknown = parser.parse_known_args()
 
 
 class PoseData:
@@ -45,7 +48,7 @@ class OptimizeDronePoseData:
     def __init__(self, path):
 
         actualData = path + "/odomPoses.csv" 
-        trueData = path + "/rawMarkerPoses.csv"
+        trueData = path + "/cleanMarkerPoses.csv"
 
         self.actualData = PoseData(dataFrame = \
             pd.read_csv(actualData, sep=',', header=None))
@@ -53,8 +56,9 @@ class OptimizeDronePoseData:
             pd.read_csv(trueData, sep=',', header=None))
 
         # params0 = [1.1, 0.08, 0.07, 0.07, 0.001, 0.001, 0.001]
-        params0 = [ 0.96801809, -0.17740034, 0.11722628, -0.09884481,
-            -0.00853899, 0.00777857, -0.00520521]
+        # params0 = [ 0.96801809, -0.17740034, 0.11722628, -0.09884481,
+        #     -0.00853899, 0.00777857, -0.00520521]
+        params0 = [ 0.76999025, -0.03243717,  0.01428027, -0.13156199, -0.01675917,  0.01032293,  -0.00239492]
         self.paramsNum = len(params0)
         self.params = np.array(params0).reshape(self.paramsNum,1)
         self.dp = 1e-4
@@ -64,6 +68,7 @@ class OptimizeDronePoseData:
 
         fig = plt.figure()
         self.ax = fig.add_subplot(111, projection='3d')
+        self.path = path
 
 
     def visualize(self):
@@ -86,7 +91,7 @@ class OptimizeDronePoseData:
             'z':self.correctedData.z, 't':self.correctedData.t}
 
         df = pd.DataFrame(dict)
-        fileName = 'correctedPose.csv'
+        fileName = self.path + '/correctedPose.csv'
         df.to_csv(fileName)
 
 
@@ -199,6 +204,6 @@ class OptimizeDronePoseData:
 
 if __name__ == '__main__' :
 
-    odpd = OptimizeDronePoseData(path)
-    odpd.gradientDescentOptimize()
-    # odpd.visualize()
+    odpd = OptimizeDronePoseData(args.path)
+    # odpd.gradientDescentOptimize()
+    odpd.visualize()
