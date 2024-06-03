@@ -219,6 +219,7 @@ class MovingObjectGroundTruthGeneration:
 			m_f, m_s, result, vmm_front, vmm_side)
 
 		x, y = self.rescaleToMetric(result)
+		print(x, y)
 		self.savePath(x, y)
 
 
@@ -246,7 +247,9 @@ class MovingObjectGroundTruthGeneration:
 		box = self.getMainWhiteSegment(map)
 		if box is None:
 			return None, None
-
+		# ........................................................
+		# x pixel (box[0]+box[2]/2) 
+		# y pix (box[1]+box[3]/2)
 		out_x = (box[0]+box[2]/2) * (self._fieldWidth / self._pixelMapSize[0])
 		out_y = self._fieldLength - \
 			(box[1]+box[3]/2) * (self._fieldLength / self._pixelMapSize[1])
@@ -282,6 +285,7 @@ class MovingObjectGroundTruthGeneration:
 	def switch(self, front, side):
 
 		self._key = cv.waitKey(self._delay)
+		# self._key = cv.waitKey()
 
 		if self._key == ord('a'):
 			self._go = False
@@ -296,6 +300,9 @@ class MovingObjectGroundTruthGeneration:
 
 		elif self._key == ord('f'):
 			self.calcTransforms()
+		
+		elif self._key == ord('z'):
+			self._delay = 100000000000
 
 
 	def detectMotion(self, image, view):

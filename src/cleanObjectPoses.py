@@ -36,7 +36,9 @@ key = -1
 
 milestones = []
 
+c = 1
 for k, num in enumerate(raw_y):
+    print ("Row : " + str(c))
     if key == ord('d'):
         indices.append(idx)
         # print(indices)
@@ -50,13 +52,16 @@ for k, num in enumerate(raw_y):
     t2 = [raw_x[index] for index in indices]
     plt.cla()
     plt.plot(raw_x, raw_y)
-    plt.scatter(raw_x[k], raw_y[k], Color='yellow')
-    plt.scatter(t2, x2, Color='red')
+    plt.scatter(raw_x[k], raw_y[k], color='black')
+    print("raw_x : " + str(raw_x[k]) + " - raw_y : " + str(raw_y[k]))
+    plt.scatter(t2, x2, color='red')
     plt.grid(True)
     plt.pause(0.001)
     cv.imshow("input window", frame)
     key = cv.waitKey()
     idx = k
+    c += 1
+    
 
 it = 0
 clean_milestones = []

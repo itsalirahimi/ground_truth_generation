@@ -47,7 +47,7 @@ class OptimizeDronePoseData:
 
     def __init__(self, path):
 
-        actualData = path + "/odomPoses.csv" 
+        actualData = path + "/zodomPoses.csv" 
         trueData = path + "/cleanMarkerPoses.csv"
 
         self.actualData = PoseData(dataFrame = \
@@ -56,9 +56,10 @@ class OptimizeDronePoseData:
             pd.read_csv(trueData, sep=',', header=None))
 
         # params0 = [1.1, 0.08, 0.07, 0.07, 0.001, 0.001, 0.001]
-        # params0 = [ 0.96801809, -0.17740034, 0.11722628, -0.09884481,
-        #     -0.00853899, 0.00777857, -0.00520521]
-        params0 = [ 0.76999025, -0.03243717,  0.01428027, -0.13156199, -0.01675917,  0.01032293,  -0.00239492]
+        # params0 = [0.87904138, -0.03340808, -0.01419431, 0.00430938, -0.02820221, 0.02055454, 0.00184789]
+        params0 = [0.87895081, -0.02968645, -0.01686102,  0.00426654, -0.02887164,  0.02091124, 0.00197401]
+        # params0 = [ 0.80533649 -0.02953783  0.00194023 -0.12916038 -0.02395732  0.01647432  -0.00354204]
+
         self.paramsNum = len(params0)
         self.params = np.array(params0).reshape(self.paramsNum,1)
         self.dp = 1e-4

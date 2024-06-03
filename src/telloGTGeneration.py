@@ -141,7 +141,7 @@ class ArucoBasedDroneGroundTruthGeneration:
 		if not nums_marker is None:
 
 			df_marker = pd.DataFrame({'Xs':nums_marker[0], 'Ys':nums_marker[1],
-			 	'Zs':nums_marker[2], 'Time':[t]})
+			 	'Zs':nums_marker[2], 'Time':[t], 'text_Time':["t"+str(t)]})
 			# df_marker = pd.DataFrame({'Xs':nums_marker[0][0], 'Ys':nums_marker[1][0],
 			#  	'Zs':nums_marker[2][0]})
 
@@ -150,7 +150,7 @@ class ArucoBasedDroneGroundTruthGeneration:
 		if not nums_odom is None:
 
 			df_odom = pd.DataFrame({'Xs':nums_odom[0], 'Ys':nums_odom[1],
-				'Zs':nums_odom[2], 'Time':[t]})
+				'Zs':nums_odom[2], 'Time':[t], 'text_Time':["t"+str(t)]})
 
 			df_odom.to_csv(self._odomPosesFileName, mode='a', index=False, header=False)
 
@@ -178,6 +178,15 @@ class ArucoBasedDroneGroundTruthGeneration:
 			correctedOdomPose = self.getCorrectedOdom(odomPose)
 		else:
 			correctedOdomPose = None
+
+		if not os.path.exists("/home/ali/161618log/telloimg"):
+			os.mkdir("/home/ali/161618log/telloimg")
+		
+		# Write images
+
+		cv.imwrite(args.path+"/telloimg/{}.jpg".format(str(t)), image)
+		# print (type(odomQuat))
+		# print (type(odomPose))
 
 		cv.putText(image, "Aruco rvec: "+str(rvec), (100, 25),
 			cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
@@ -207,6 +216,10 @@ class ArucoBasedDroneGroundTruthGeneration:
 		odomDeltaPose = odomPose.reshape(3,1) - self._initOdom
 		odomDeltaPose[1] = -odomDeltaPose[1]
 		pose = np.matmul(self._odomToMarkerDCM, -odomDeltaPose) + self._initArucoPose
+		# print(type(odomPose))
+		# print(odomPose)
+		# print(type(pose))
+		# print(pose)
 		return pose
 
 
