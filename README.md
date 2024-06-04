@@ -48,7 +48,7 @@ First of all, consider that using the ROS's tools requires sourcing the ROS's *s
 
 ```bash
 # In a kinetic-distro ROS:
-source /opt/ros/kinetic/devel/setup.bash
+source /opt/ros/noetic/setup.bash
 ```
 
 Or you are working within a workspace:
