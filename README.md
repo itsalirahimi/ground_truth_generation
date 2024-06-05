@@ -47,7 +47,7 @@ The sequential steps to log, classify and correct the raw data are performed usi
 First of all, consider that using the ROS's tools requires sourcing the ROS's *setup.bash* file. Whether it is the main bash file in Linux:
 
 ```bash
-# In a kinetic-distro ROS:
+# In a noetic-distro ROS:
 source /opt/ros/noetic/setup.bash
 ```
 
@@ -141,7 +141,7 @@ Using a gradient descent approach, this feature corrects the drifted drone odome
 3. Run:
 
 ```bash
-python dronePoseDataOptimization.py -p <save-dir>
+python3 dronePoseDataOptimization.py -p <save-dir>
 ```
 
 **OUTPUT:** 
@@ -162,7 +162,7 @@ When desired (when the change in parameters is ignorable), kill the program and 
 4. Run:
 
 ```bash
-python dronePoseDataOptimization.py -p <save-dir>
+python3 dronePoseDataOptimization.py -p <save-dir>
 ```
 
 **OUTPUT:** 
@@ -186,7 +186,7 @@ python dronePoseDataOptimization.py -p <save-dir>
 [//]: # "TODO: Pass the address of front and side view camera videos to the 'writeVideos.py' using argparse"
 
 ```bash
-python writeVideos.py
+python3 writeVideos.py
 ```
 
 The numbered frames of the two videos are saved in the two folders *frames_front* and *frames_side* in the root. 
@@ -219,7 +219,7 @@ fps = 30
 4. Run:
 
 ```
-python objectGTGeneration.py -p <save-dir> -f <front-video-dir> -s <side-video-dir>
+python3 objectGTGeneration.py -p <save-dir> -f <front-video-dir> -s <side-video-dir>
 ```
 
 sample:
