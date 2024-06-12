@@ -71,6 +71,7 @@ class ArucoBasedDroneGroundTruthGeneration:
 									[0, 0.5, 0],
 									[0, 0, 0.5]])
 		self._markerLength = 0.478
+		self.check_dir = 0
 		self._it = 0
 		self._it_marker = 0
 		self._odomBuffer = np.zeros((1,8))
@@ -85,6 +86,7 @@ class ArucoBasedDroneGroundTruthGeneration:
 		self._arucoPoses =[]
 		self._odomCorrectedPoses =[]
 		self._posesBufferSize = 50
+		
 
 
 	def defSub(self, a=None):
@@ -171,6 +173,24 @@ class ArucoBasedDroneGroundTruthGeneration:
 		t = data.header.stamp.to_sec()
 		self._it += 1
 		image = self.bridge.imgmsg_to_cv2(data, "bgr8")
+		
+		# Write images
+		if (self.check_dir == 0):
+			DIR_PATH = args.path+"/rawImage"
+			if os.path.exists(DIR_PATH):
+				files = os.listdir(DIR_PATH)
+				for file in files:
+					file_path = os.path.join(DIR_PATH, file)
+					if os.path.isfile(file_path):
+						os.remove(file_path)
+			else:
+				os.mkdir(DIR_PATH)
+			self.check_dir = 1
+			
+		cv.imwrite(args.path+"/rawImage/{}.jpg".format(str(t)), image)
+		# print (type(odomQuat))
+		# print (type(odomPose))
+
 		id, tvec, rvec = self.detect(image)
 		arucoPose = self.getArucoPose(id, tvec)
 		odomPose, odomQuat = self.findCorrespondingOdom(t)
@@ -178,15 +198,6 @@ class ArucoBasedDroneGroundTruthGeneration:
 			correctedOdomPose = self.getCorrectedOdom(odomPose)
 		else:
 			correctedOdomPose = None
-
-		if not os.path.exists("/home/ali/161618log/telloimg"):
-			os.mkdir("/home/ali/161618log/telloimg")
-		
-		# Write images
-
-		cv.imwrite(args.path+"/telloimg/{}.jpg".format(str(t)), image)
-		# print (type(odomQuat))
-		# print (type(odomPose))
 
 		cv.putText(image, "Aruco rvec: "+str(rvec), (100, 25),
 			cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
