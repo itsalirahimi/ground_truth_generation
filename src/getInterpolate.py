@@ -11,7 +11,10 @@ import argparse
 from scipy.interpolate import UnivariateSpline
 import numpy as np
 
-
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('-p', '--path', help='The Path to the Bag File.', dest='path')
+args, unknown = parser.parse_known_args()
 
 class PoseData:
 
@@ -38,14 +41,14 @@ def cleaner(path):
     trueData = PoseData(dataFrame = \
             pd.read_csv(trueData, sep=',', header=None))
 
-    dataFrame = pd.read_csv("/home/ali/Log_161618/odomPoses.csv", sep=',', header=None)
+    dataFrame = pd.read_csv(path + "/odomPoses.csv", sep=',', header=None)
     if not dataFrame is None:
         x = np.array(dataFrame.values[:,0])
         y = np.array(dataFrame.values[:,1])
         z = np.array(dataFrame.values[:,2])
         t = np.array(dataFrame.values[:,3])
 
-    dataFrame = pd.read_csv("/home/ali/Log_161618/cleanMarkerPoses.csv", sep=',', header=None)
+    dataFrame = pd.read_csv(path + "/cleanMarkerPoses.csv", sep=',', header=None)
     if not dataFrame is None:
         x2 = np.array(dataFrame.values[:,0])
         y2 = np.array(dataFrame.values[:,1])
@@ -81,4 +84,4 @@ def cleaner(path):
 
 if __name__ == '__main__' :
 
-    cleaner("/home/ali/Log_161618")
+    cleaner(args.path)

@@ -2,15 +2,25 @@ import os
 import pandas as pd
 import numpy as np
 
+
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('-p', '--path', help='The Path to the Bag File.', dest='path')
+args, unknown = parser.parse_known_args()
+
+
+
+path_in = args.path + "/rawImage/"
+path_out = args.path + "/clearImage/"
+
 # Get the list of all files and directories
-path = "/home/ali/Log_161618/telloimg/"
-path1 = "/home/ali/Log_161618/img/"
-dir_list = os.listdir(path)
+dir_list = os.listdir(path_in)
 
-
+if not os.path.exists(path_out):
+    os.mkdir(path_out)
 
 # Read CSV
-dataFrame = pd.read_csv("/home/ali/Log_161618/odomPoses.csv", sep=',', header=None)
+dataFrame = pd.read_csv(args.path + "/odomPoses.csv", sep=',', header=None)
 if not dataFrame is None:
     x = np.array(dataFrame.values[:,0])
     y = np.array(dataFrame.values[:,1])
@@ -27,10 +37,6 @@ for i in t:
     c += 1
 
 
-# print(len(list_temp))
-# print(len(dir_list))
-
-
 c = 1
 for item in list_temp:
     for img in dir_list:
@@ -38,7 +44,7 @@ for item in list_temp:
             print(c, img ,item[1], item[0])
 
             # dir_list.remove(img)
-            os.rename(path+img , path1+item[0])
+            os.rename(path_in+img , path_out+item[0])
             c += 1
             break
 
