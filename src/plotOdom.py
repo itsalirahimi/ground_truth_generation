@@ -55,12 +55,12 @@ while True:
 	odoms_df = pd.read_csv(saveDir + "/odomPoses.csv", sep=',', header=None)
 	markers_df = pd.read_csv(saveDir + "/rawMarkerPoses.csv", sep=',', header=None)
 	ax.cla()
-	xs_o = odoms_df.values[:,0]
-	ys_o = odoms_df.values[:,1]
-	zs_o = odoms_df.values[:,2]
-	xs_m = markers_df.values[:,0]
-	ys_m = markers_df.values[:,1]
-	zs_m = markers_df.values[:,2]
+	xs_o = odoms_df.values[:,1]
+	ys_o = odoms_df.values[:,2]
+	zs_o = odoms_df.values[:,3]
+	xs_m = markers_df.values[:,1]
+	ys_m = markers_df.values[:,2]
+	zs_m = markers_df.values[:,3]
 	ax.plot(xs_o, ys_o, zs_o, color='blue', linewidth=2)
 	ax.scatter(xs_m, ys_m, zs_m, color='red', linewidth=0)
 

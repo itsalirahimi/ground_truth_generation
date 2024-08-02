@@ -137,8 +137,8 @@ class ArucoBasedDroneGroundTruthGeneration:
 
 		if not nums_marker is None:
 
-			df_marker = pd.DataFrame({'Xs':nums_marker[0], 'Ys':nums_marker[1],
-			 	'Zs':nums_marker[2], 'Time':[t], 'text_Time':["t"+str(t)]})
+			df_marker = pd.DataFrame({'Time':[t], 'Xs':nums_marker[0], 'Ys':nums_marker[1],
+			 	'Zs':nums_marker[2], 'text_Time':["t"+str(t)]})
 			# df_marker = pd.DataFrame({'Xs':nums_marker[0][0], 'Ys':nums_marker[1][0],
 			#  	'Zs':nums_marker[2][0]})
 
