@@ -44,7 +44,9 @@ for item in list_temp:
             print(c, img ,item[1], item[0])
 
             # dir_list.remove(img)
-            os.rename(path_in+img , path_out+item[0])
+            cmd = "cp "+ path_in+img + " " + path_out+item[0]
+            os.system(cmd)
+            # os.rename(path_in+img , path_out+item[0])
             c += 1
             break
 

@@ -87,8 +87,6 @@ class ArucoBasedDroneGroundTruthGeneration:
 		self._odomCorrectedPoses =[]
 		self._posesBufferSize = 50
 		
-
-
 	def defSub(self, a=None):
 
 		if a is not None:
@@ -96,7 +94,6 @@ class ArucoBasedDroneGroundTruthGeneration:
 			self.image_sub = rospy.Subscriber("/tello/camera/image_raw", Image,
 				self.imageCallback)
 			self.bridge = CvBridge()
-
 
 	def removeOldLogs(self):
 		
@@ -115,7 +112,6 @@ class ArucoBasedDroneGroundTruthGeneration:
 		for mi in markerImages:
 			fileName = str(mi)
 			os.remove(fileName)
-
 
 	def odomCallback(self, data=None):
 
@@ -137,8 +133,7 @@ class ArucoBasedDroneGroundTruthGeneration:
 			pose_orientation_t = np.array([x, y, z, qx, qy, qz, qw, t]).reshape(1,8)
 			self.bufferOdom(pose_orientation_t)
 
-
-	def savePoses(self, nums_marker, nums_odom, t):
+	def savePoses(self, nums_marker, nums_odom, t, nums_odom_orientation):
 
 		if not nums_marker is None:
 
@@ -149,13 +144,16 @@ class ArucoBasedDroneGroundTruthGeneration:
 
 			df_marker.to_csv(self._markerPosesFileName, mode='a', index=False, header=False)
 
+		q = [nums_odom_orientation[3], nums_odom_orientation[0], nums_odom_orientation[1], nums_odom_orientation[2]]
+		roll, pitch, yaw = self.quaternion_to_euler(q)
 		if not nums_odom is None:
-
-			df_odom = pd.DataFrame({'Xs':nums_odom[0], 'Ys':nums_odom[1],
-				'Zs':nums_odom[2], 'Time':[t], 'text_Time':["t"+str(t)]})
+			# TODO-NEW: The orientation must be transformed from tello frame into markers' NED
+			# TODO-NEW: The order of columns must be changed and also in other files using it 
+			df_odom = pd.DataFrame({'Time':[t], 'Xs':nums_odom[0], 'Ys':nums_odom[1],
+				'Zs':nums_odom[2], 'Roll':roll, 'Pitch':pitch, 
+				'Yaw':yaw, 'text_Time':["t"+str(t)]})
 
 			df_odom.to_csv(self._odomPosesFileName, mode='a', index=False, header=False)
-
 
 	def bufferOdom(self, nums):
 
@@ -166,7 +164,6 @@ class ArucoBasedDroneGroundTruthGeneration:
 				self._odomBuffer[k,:] = self._odomBuffer[k+1,:]
 
 			self._odomBuffer[self._odomBufferSize-1,:] = nums
-
 
 	def imageCallback(self, data):
 
@@ -212,12 +209,11 @@ class ArucoBasedDroneGroundTruthGeneration:
 		cv.imshow("Image", image)
 		self._key = cv.waitKey(1)
 
-		self.savePoses(arucoPose, correctedOdomPose, t)
+		self.savePoses(arucoPose, correctedOdomPose, t, odomQuat)
 
 		if self._key == ord('a') and not self._initialized and not id is None:
 			print('----init----')
 			self.setInitOdoms(tvec, rvec, odomPose, odomQuat)
-
 
 	def getCorrectedOdom(self, odomPose):
 
@@ -232,7 +228,6 @@ class ArucoBasedDroneGroundTruthGeneration:
 		# print(type(pose))
 		# print(pose)
 		return pose
-
 
 	def setInitOdoms(self, cam_wrt_aruco_pose, cam_wrt_aruco_euler,
 		body_wrt_odom_pose, body_wrt_odom_quat):
@@ -251,7 +246,6 @@ class ArucoBasedDroneGroundTruthGeneration:
 
 		self._initialized = True
 
-
 	def getArucoPose(self, id, pose):
 
 		if not id is None and int(id) in testData.idPoses.keys():
@@ -259,7 +253,6 @@ class ArucoBasedDroneGroundTruthGeneration:
 			 	+ pose[1], pose[2]])
 		else:
 			return None
-
 
 	def findCorrespondingOdom(self, time):
 
@@ -278,15 +271,12 @@ class ArucoBasedDroneGroundTruthGeneration:
 		# 	print('image and odom delay:', time-odomT)
 		return pose, orientation
 
-
 	def isRotationMatrix(self, R):
 		Rt = np.transpose(R)
 		shouldBeIdentity = np.dot(Rt, R)
 		I = np.identity(3, dtype=R.dtype)
 		n = np.linalg.norm(I - shouldBeIdentity)
 		return n < 1e-6
-
-
 
 	def rotationMatrixToEulerAngles(self, R):
 
@@ -306,8 +296,6 @@ class ArucoBasedDroneGroundTruthGeneration:
 			z = 0
 			
 		return np.array([x, y, z])
-
-
 
 	def detect(self, img):
 
@@ -362,7 +350,6 @@ class ArucoBasedDroneGroundTruthGeneration:
 				# return Is[0], camTvec, camRvec
 		return None, None, None
 
-
 	def deleteOutliers(self):
 
 		print("Deleting Outliers Started.")
@@ -389,7 +376,6 @@ class ArucoBasedDroneGroundTruthGeneration:
 		df.drop(df.index[toBeRemoved], inplace=True)
 		df.to_csv(self._newMarkerPosesFileName, index=False, header=False)
 		print("Deleting Outliers Done!")
-
 
 	def drawMarkers(self, image, corners, ids):
 
@@ -423,7 +409,6 @@ class ArucoBasedDroneGroundTruthGeneration:
 				cv.putText(image, str(markerID),
 					(topLeft[0], topLeft[1] - 15), cv.FONT_HERSHEY_SIMPLEX,
 					0.5, (0, 255, 0), 2)
-
 
 	def setCameraParams(self, cameraMatrix, distortionMatrix):
 		self._cameraMatrix = cameraMatrix
@@ -467,7 +452,34 @@ class ArucoBasedDroneGroundTruthGeneration:
 		DCM[2,2] = np.cos(theta)*np.cos(phi)
 
 		return DCM
+	
+	def quaternion_to_euler(self, q):
+		# [w,x,y,z]
+		q0, q1, q2, q3 = q
 
+		# Roll (x-axis rotation)
+		sinr_cosp = 2 * (q0 * q1 + q2 * q3)
+		cosr_cosp = 1 - 2 * (q1 * q1 + q2 * q2)
+		roll = np.arctan2(sinr_cosp, cosr_cosp)
+
+		# Pitch (y-axis rotation)
+		sinp = 2 * (q0 * q2 - q3 * q1)
+		if abs(sinp) >= 1:
+			pitch = np.sign(sinp) * (np.pi / 2)  # use 90 degrees if out of range
+		else:
+			pitch = np.arcsin(sinp)
+
+		# Yaw (z-axis rotation)
+		siny_cosp = 2 * (q0 * q3 + q1 * q2)
+		cosy_cosp = 1 - 2 * (q2 * q2 + q3 * q3)
+		yaw = np.arctan2(siny_cosp, cosy_cosp)
+
+		# Convert from radians to degrees
+		roll = np.degrees(roll)
+		pitch = np.degrees(pitch)
+		yaw = np.degrees(yaw)
+
+		return roll, pitch, yaw
 
 if __name__ == '__main__' :
 
