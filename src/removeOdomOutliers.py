@@ -23,10 +23,10 @@ def plot_3d(x,y,z,t):
 
 dataFrame = pd.read_csv(args.path+'/odomPoses.csv', sep=',', header=None)
 
-x = np.array(dataFrame.values[:,0])
-y = np.array(dataFrame.values[:,1])
-z = np.array(dataFrame.values[:,2])
-t = np.array(dataFrame.values[:,3])
+x = np.array(dataFrame.values[:,1])
+y = np.array(dataFrame.values[:,2])
+z = np.array(dataFrame.values[:,3])
+t = np.array(dataFrame.values[:,0])
 
 
 

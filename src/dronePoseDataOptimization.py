@@ -16,10 +16,10 @@ class PoseData:
     def __init__(self, dataFrame = None, xs = None, ys = None, zs = None, ts = None):
 
         if not dataFrame is None:
-            self.x = np.array(dataFrame.values[:,0])
-            self.y = np.array(dataFrame.values[:,1])
-            self.z = np.array(dataFrame.values[:,2])
-            self.t = np.array(dataFrame.values[:,3]) - dataFrame.values[0,3]
+            self.x = np.array(dataFrame.values[:,1])
+            self.y = np.array(dataFrame.values[:,2])
+            self.z = np.array(dataFrame.values[:,3])
+            self.t = np.array(dataFrame.values[:,0]) - dataFrame.values[0,0]
 
         else:
             self.x = xs[0]
@@ -57,7 +57,7 @@ class OptimizeDronePoseData:
 
         # params0 = [1.1, 0.08, 0.07, 0.07, 0.001, 0.001, 0.001]
         # params0 = [0.87904138, -0.03340808, -0.01419431, 0.00430938, -0.02820221, 0.02055454, 0.00184789]
-        params0 = [0.87895081, -0.02968645, -0.01686102,  0.00426654, -0.02887164,  0.02091124, 0.00197401]
+        params0 = [ 7.92082682e-01, -2.67155051e-02,  5.91528111e-04,  7.34368344e-03,  -3.65096983e-02,  2.35720347e-02,  3.78647673e-03]
         # params0 = [ 0.80533649 -0.02953783  0.00194023 -0.12916038 -0.02395732  0.01647432  -0.00354204]
 
         self.paramsNum = len(params0)

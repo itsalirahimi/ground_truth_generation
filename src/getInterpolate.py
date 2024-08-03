@@ -21,10 +21,10 @@ class PoseData:
     def __init__(self, dataFrame = None, xs = None, ys = None, zs = None, ts = None):
 
         if not dataFrame is None:
-            self.x = np.array(dataFrame.values[:,0])
-            self.y = np.array(dataFrame.values[:,1])
-            self.z = np.array(dataFrame.values[:,2])
-            self.t = np.array(dataFrame.values[:,3])
+            self.x = np.array(dataFrame.values[:,1])
+            self.y = np.array(dataFrame.values[:,2])
+            self.z = np.array(dataFrame.values[:,3])
+            self.t = np.array(dataFrame.values[:,0])
 
         else:
             self.x = xs[0]
@@ -43,17 +43,17 @@ def cleaner(path):
 
     dataFrame = pd.read_csv(path + "/odomPoses.csv", sep=',', header=None)
     if not dataFrame is None:
-        x = np.array(dataFrame.values[:,0])
-        y = np.array(dataFrame.values[:,1])
-        z = np.array(dataFrame.values[:,2])
-        t = np.array(dataFrame.values[:,3])
+        x = np.array(dataFrame.values[:,1])
+        y = np.array(dataFrame.values[:,2])
+        z = np.array(dataFrame.values[:,3])
+        t = np.array(dataFrame.values[:,0])
 
     dataFrame = pd.read_csv(path + "/cleanMarkerPoses.csv", sep=',', header=None)
     if not dataFrame is None:
-        x2 = np.array(dataFrame.values[:,0])
-        y2 = np.array(dataFrame.values[:,1])
-        z2 = np.array(dataFrame.values[:,2])
-        t2 = np.array(dataFrame.values[:,3])
+        x2 = np.array(dataFrame.values[:,1])
+        y2 = np.array(dataFrame.values[:,2])
+        z2 = np.array(dataFrame.values[:,3])
+        t2 = np.array(dataFrame.values[:,0])
 
 
 

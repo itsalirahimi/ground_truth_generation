@@ -2,6 +2,11 @@ import cv2
 import os
 from ultralytics import YOLO
 
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('-p', '--path', help='The Path to the Bag File.', dest='path')
+args, unknown = parser.parse_known_args()
+
 # Load the YOLOv8n model
 model = YOLO('yolov8n.pt')
 
@@ -69,12 +74,12 @@ def personDetect(input_image, output_image):
 
 
 # path = "/home/ali/161618log/telloimg/"
-path_in = "/home/ali/Log_161618/img/"
-path_out = "/home/ali/Log_161618/Yolo_img/"
+path_in = args.path + "/clearImage/"
+path_out = args.path + "/YOLOImage/"
 dir_list = os.listdir(path_in)
 sort_dir = sorted(dir_list)
 
-output_file = open(path_out+"output.txt", "w")
+output_file = open(args.path +"YOLOoutput.txt", "w")
 for img in sort_dir:
     result_points = personDetect(path_in+img, path_out+img)
     output_file.write(result_points+"\n")
