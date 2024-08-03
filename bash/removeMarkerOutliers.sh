@@ -12,4 +12,4 @@ source ~/anaconda3/etc/profile.d/conda.sh
 source /opt/ros/noetic/setup.bash
 conda activate gtg
 set -e
-python ${repoRoot}/src/removeMarkerPoseOutliers.py -p `echo ${savDr}`
+python ${repoRoot}/src/removeMarkerPoseOutliers.py -p `echo ${savDr}` -b `echo ${savDr}`
