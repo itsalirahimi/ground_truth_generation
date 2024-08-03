@@ -218,7 +218,15 @@ class MovingObjectGroundTruthGeneration:
 		self.visualize(image_f, image_s, transformedPath_f, transformedPath_s,
 			m_f, m_s, result, vmm_front, vmm_side)
 
+		# if auto:
+		# 	x, y = self.rescaleToMetric(result)
+		# else:
+		# 	manual_pt_mapped_f, manual_pt_mapped_s = self.transformViews(manually_marked_front_view, manually_marked_side_view)
+		# 	manual_pt_mapped, _, _ = self.getUnifiedMap(manual_pt_mapped_f, manual_pt_mapped_s, None, None)
+		# 	x, y = self.rescaleToMetric(manual_pt_mapped)
+
 		x, y = self.rescaleToMetric(result)
+			
 		print(x, y)
 		self.savePath(x, y)
 
@@ -233,13 +241,16 @@ class MovingObjectGroundTruthGeneration:
 			res = np.zeros((self._pixelMapSize[1], self._pixelMapSize[0], 3),
 				dtype=np.uint8)
 
+		if not frontMap is None and not sideMap is None:
 			res[:,:,0] = result
 			res[:,:,1] = result
 			res[:,:,2] = result
 			visualizedMotionMap_front = cv.bitwise_or(frontMap,	res, mask = None)
 			visualizedMotionMap_side = cv.bitwise_or(sideMap, res, mask = None)
 
-		return result, visualizedMotionMap_front, visualizedMotionMap_side
+			return result, visualizedMotionMap_front, visualizedMotionMap_side
+		else:
+			return result, None, None
 
 
 	def rescaleToMetric(self, map):
@@ -268,7 +279,7 @@ class MovingObjectGroundTruthGeneration:
 		if not self._presetUIDestroyed_side:
 			for p in self._fieldCorners_side:
 				cv.circle(sideView, (p[0],p[1]), 5, (0,0,255), -1)
-			cv.imshow(self._presetUI_side, sideView)
+		cv.imshow(self._presetUI_side, sideView)
 
 		if not frontResult is None:
 			cv.imshow(self._resultUI_front, frontResult)
