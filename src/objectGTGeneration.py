@@ -132,6 +132,7 @@ class MovingObjectGroundTruthGeneration:
 		self._last_side_vx = None
 		self._maxPixelMovement = 500
 		self._motionModelStartFrame = 30000
+		self._auto = True
 
 
 	def initRectification(self, image):
@@ -218,14 +219,12 @@ class MovingObjectGroundTruthGeneration:
 		self.visualize(image_f, image_s, transformedPath_f, transformedPath_s,
 			m_f, m_s, result, vmm_front, vmm_side)
 
-		# if auto:
-		# 	x, y = self.rescaleToMetric(result)
-		# else:
-		# 	manual_pt_mapped_f, manual_pt_mapped_s = self.transformViews(manually_marked_front_view, manually_marked_side_view)
-		# 	manual_pt_mapped, _, _ = self.getUnifiedMap(manual_pt_mapped_f, manual_pt_mapped_s, None, None)
-		# 	x, y = self.rescaleToMetric(manual_pt_mapped)
-
-		x, y = self.rescaleToMetric(result)
+		if self._auto:
+			x, y = self.rescaleToMetric(result)
+		else:
+			manual_pt_mapped_f, manual_pt_mapped_s = self.transformViews(manually_marked_front_view, manually_marked_side_view)
+			manual_pt_mapped, _, _ = self.getUnifiedMap(manual_pt_mapped_f, manual_pt_mapped_s, None, None)
+			x, y = self.rescaleToMetric(manual_pt_mapped)
 			
 		print(x, y)
 		self.savePath(x, y)

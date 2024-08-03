@@ -19,10 +19,10 @@ roscore &
 conda activate gtg
 set -e
 export LD_LIBRARY_PATH=/opt/ros/noetic/lib/:${HOME}/anaconda3/envs/gtg/bin/python
-python ${repoRoot}/src/telloGTGeneration.py -p `echo ${savDr}` &
+python ${repoRoot}/src/telloGTGeneration.py -p `echo ${savDr}` -b `echo ${bagFile}` &
 conda deactivate
 cd `echo ${savDr}`
-source /opt/ros/noetic/setup.bash
-rosbag play `echo ${bagFile}` &
+# source /opt/ros/noetic/setup.bash
+# rosbag play `echo ${bagFile}` &
 conda activate gtg
 python ${repoRoot}/src/plotOdom.py -p `echo ${savDr}`

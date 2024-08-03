@@ -12,10 +12,14 @@ import math
 from pathlib import Path
 import subprocess
 import sys
+import rosbag
+
+
 
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('-p', '--path', help='The Path to the Bag File.', dest='path')
+parser.add_argument('-b', '--bagdir', help='The Path to the Bag File.', dest='bagdir')
 args, unknown = parser.parse_known_args()
 
 rootOfRepo = subprocess.getoutput("git rev-parse --show-toplevel")
@@ -47,7 +51,7 @@ ARUCO_DICT = {
 
 class ArucoBasedDroneGroundTruthGeneration:
 
-	def __init__(self, saveAddress,  outlierRemovalMode=False):
+	def __init__(self, saveAddress, bagDir,  outlierRemovalMode=False):
 
 		calibFile = rootOfRepo + "/params/telloCam.yaml"
 
@@ -65,7 +69,7 @@ class ArucoBasedDroneGroundTruthGeneration:
 		fs = cv.FileStorage(calibFile, cv.FILE_STORAGE_READ)
 		self.setCameraParams(fs.getNode("camera_matrix").mat(),
 			fs.getNode("distortion_coefficients").mat())
-		self.defSub(1)
+		# self.defSub(1)
 		self._axis3D = np.float32([ [0, 0, 0],
 									[0.5, 0, 0],
 									[0, 0.5, 0],
@@ -86,14 +90,28 @@ class ArucoBasedDroneGroundTruthGeneration:
 		self._arucoPoses =[]
 		self._odomCorrectedPoses =[]
 		self._posesBufferSize = 50
+		self.readBag(bagDir)
 		
 	def defSub(self, a=None):
-
 		if a is not None:
 			self.odom_sub = rospy.Subscriber("/tello/odom", Odometry, self.odomCallback)
 			self.image_sub = rospy.Subscriber("/tello/camera/image_raw", Image,
 				self.imageCallback)
 			self.bridge = CvBridge()
+
+	def readBag(self, bag_dir):
+		self.bridge = CvBridge()
+		with rosbag.Bag(bag_dir, 'r') as bag:
+			for topic, msg, t in bag.read_messages():
+				
+				if topic == "/tello/camera/image_raw":
+					print(msg.header.stamp.to_sec())
+					self.imageCallback(msg)
+					# print("Image Call Back")
+				if topic == "/tello/odom":
+					print(msg.header.stamp.to_sec())
+					self.odomCallback(msg)
+					# print("Odom Call Back")
 
 	def removeOldLogs(self):
 		
@@ -485,6 +503,6 @@ if __name__ == '__main__' :
 
 	rospy.init_node('telloGTGeneration', anonymous=True)
 
-	agtg = ArucoBasedDroneGroundTruthGeneration(args.path)
+	agtg = ArucoBasedDroneGroundTruthGeneration(args.path, args.bagdir)
 
 	rospy.spin()

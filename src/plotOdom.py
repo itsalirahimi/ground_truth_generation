@@ -46,28 +46,33 @@ def set_axes_equal(ax):
     ax.set_ylim3d([y_middle - plot_radius, y_middle + plot_radius])
     ax.set_zlim3d([z_middle - plot_radius, z_middle + plot_radius])
 
-
+c = 0
 while True:
-	if not os.path.exists(saveDir + "/odomPoses.csv") or \
-		not os.path.exists(saveDir + "/rawMarkerPoses.csv"):
-		continue
+    if not os.path.exists(saveDir + "/odomPoses.csv") or not os.path.exists(saveDir + "/rawMarkerPoses.csv"):
+            continue
+    try:
+        odoms_df = pd.read_csv(saveDir + "/odomPoses.csv", sep=',', header=None)
+        markers_df = pd.read_csv(saveDir + "/rawMarkerPoses.csv", sep=',', header=None)
+        ax.cla()
+        xs_o = odoms_df.values[:,1]
+        ys_o = odoms_df.values[:,2]
+        zs_o = odoms_df.values[:,3]
+        xs_m = markers_df.values[:,1]
+        ys_m = markers_df.values[:,2]
+        zs_m = markers_df.values[:,3]
+        ax.plot(xs_o, ys_o, zs_o, color='blue', linewidth=2)
+        ax.scatter(xs_m, ys_m, zs_m, color='red', linewidth=0)
 
-	odoms_df = pd.read_csv(saveDir + "/odomPoses.csv", sep=',', header=None)
-	markers_df = pd.read_csv(saveDir + "/rawMarkerPoses.csv", sep=',', header=None)
-	ax.cla()
-	xs_o = odoms_df.values[:,1]
-	ys_o = odoms_df.values[:,2]
-	zs_o = odoms_df.values[:,3]
-	xs_m = markers_df.values[:,1]
-	ys_m = markers_df.values[:,2]
-	zs_m = markers_df.values[:,3]
-	ax.plot(xs_o, ys_o, zs_o, color='blue', linewidth=2)
-	ax.scatter(xs_m, ys_m, zs_m, color='red', linewidth=0)
-
-	set_axes_equal(ax)
-	plt.draw()
-	ax.set_xlabel('X')
-	ax.set_ylabel('Y')
-	ax.set_zlabel('Z')
-
-	plt.pause(5)
+        set_axes_equal(ax)
+        plt.draw()
+        ax.set_xlabel('X')
+        ax.set_ylabel('Y')
+        ax.set_zlabel('Z')
+        
+        plt.pause(5)
+    except:
+        c += 1
+        print("error plotOdom")
+        if (c >= 3):
+            exit()
+	
