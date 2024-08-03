@@ -22,10 +22,10 @@ if not os.path.exists(path_out):
 # Read CSV
 dataFrame = pd.read_csv(args.path + "/odomPoses.csv", sep=',', header=None)
 if not dataFrame is None:
-    x = np.array(dataFrame.values[:,0])
-    y = np.array(dataFrame.values[:,1])
-    z = np.array(dataFrame.values[:,2])
-    t = np.array(dataFrame.values[:,4])
+    x = np.array(dataFrame.values[:,1])
+    y = np.array(dataFrame.values[:,2])
+    z = np.array(dataFrame.values[:,3])
+    t = np.array(dataFrame.values[:,7])
 
 list_temp = []
 c = 1
