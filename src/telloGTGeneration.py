@@ -60,36 +60,36 @@ class ArucoBasedDroneGroundTruthGeneration:
 		self._odomPosesFileName = saveAddress + "/odomPoses.csv"
 		self._markerImagesDir = saveAddress + "/markerDetectionFrames"
 		
-		if outlierRemovalMode:
+
+		aDictName = "DICT_4X4_250"
+		self._arucoDict = cv.aruco.Dictionary_get(ARUCO_DICT[aDictName])
+		self._arucoParams = cv.aruco.DetectorParameters_create()
+		fs = cv.FileStorage(calibFile, cv.FILE_STORAGE_READ)
+		self.setCameraParams(fs.getNode("camera_matrix").mat(),
+			fs.getNode("distortion_coefficients").mat())
+		# self.defSub(1)
+		self._axis3D = np.float32([ [0, 0, 0],
+									[0.5, 0, 0],
+									[0, 0.5, 0],
+									[0, 0, 0.5]])
+		self._markerLength = 0.478
+		self.check_dir = 0
+		self._it = 0
+		self._it_marker = 0
+		self._odomBuffer = np.zeros((1,8))
+		self._odomBufferSize = 200
+		self._lastX = 0
+		self._initialized = False
+		self._initOdom = None
+		self._beta = 18
+		self._image = None
+		# self._arucoPoses = np.zeros((1,3))
+		# self._odomCorrectedPoses = np.zeros((1,3))
+		self._arucoPoses =[]
+		self._odomCorrectedPoses =[]
+		self._posesBufferSize = 50
+		if not outlierRemovalMode:
 			self.removeOldLogs()
-		else:
-			aDictName = "DICT_4X4_250"
-			self._arucoDict = cv.aruco.Dictionary_get(ARUCO_DICT[aDictName])
-			self._arucoParams = cv.aruco.DetectorParameters_create()
-			fs = cv.FileStorage(calibFile, cv.FILE_STORAGE_READ)
-			self.setCameraParams(fs.getNode("camera_matrix").mat(),
-				fs.getNode("distortion_coefficients").mat())
-			# self.defSub(1)
-			self._axis3D = np.float32([ [0, 0, 0],
-										[0.5, 0, 0],
-										[0, 0.5, 0],
-										[0, 0, 0.5]])
-			self._markerLength = 0.478
-			self.check_dir = 0
-			self._it = 0
-			self._it_marker = 0
-			self._odomBuffer = np.zeros((1,8))
-			self._odomBufferSize = 200
-			self._lastX = 0
-			self._initialized = False
-			self._initOdom = None
-			self._beta = 18
-			self._image = None
-			# self._arucoPoses = np.zeros((1,3))
-			# self._odomCorrectedPoses = np.zeros((1,3))
-			self._arucoPoses =[]
-			self._odomCorrectedPoses =[]
-			self._posesBufferSize = 50
 			self.readBag(bagDir)
 		
 	def defSub(self, a=None):
