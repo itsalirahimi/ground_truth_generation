@@ -71,7 +71,9 @@ def personDetect(input_image, output_image):
     return (output)
 
 
-
+yoloImageDir = os.path.join(args.path, "YOLOImage")
+if not os.path.isdir(yoloImageDir):
+    os.makedirs(yoloImageDir)
 
 # path = "/home/ali/161618log/telloimg/"
 path_in = args.path + "/clearImage/"
