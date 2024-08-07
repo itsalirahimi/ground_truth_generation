@@ -52,7 +52,7 @@ def personDetect(input_image, output_image):
             
     print(out_rects)
     if (detect_person_count == 0):
-        output = "-1"
+        output = "-1,-1,-1,-1,-1,-1,-1,-1"
     elif (detect_person_count == 1):
         
         output = out_rects[0][1]
