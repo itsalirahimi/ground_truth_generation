@@ -13,19 +13,24 @@ args, unknown = parser.parse_known_args()
 
 class PoseData:
 
-    def __init__(self, dataFrame = None, xs = None, ys = None, zs = None, ts = None):
+    def __init__(self, dataFrame = None, xs = None, ys = None, zs = None, ts = None,
+                    phi = None, theta = None, psi = None):
 
         if not dataFrame is None:
             self.x = np.array(dataFrame.values[:,1])
             self.y = np.array(dataFrame.values[:,2])
             self.z = np.array(dataFrame.values[:,3])
             self.t = np.array(dataFrame.values[:,0]) - dataFrame.values[0,0]
+        
 
         else:
             self.x = xs[0]
             self.y = ys[0]
             self.z = zs[0]
-            self.t = ts
+            self.phi = phi[0]
+            self.theta = theta[0]
+            self.psi = psi[0]
+            self.t = ts[0]
 
 
     def get(self, time):
@@ -54,7 +59,6 @@ class OptimizeDronePoseData:
             pd.read_csv(actualData, sep=',', header=None))
         self.trueData = PoseData(dataFrame = \
             pd.read_csv(trueData, sep=',', header=None))
-
         # params0 = [1.1, 0.08, 0.07, 0.07, 0.001, 0.001, 0.001]
         # params0 = [0.87904138, -0.03340808, -0.01419431, 0.00430938, -0.02820221, 0.02055454, 0.00184789]
         params0 = [ 7.92082682e-01, -2.67155051e-02,  5.91528111e-04,  7.34368344e-03,  -3.65096983e-02,  2.35720347e-02,  3.78647673e-03]
@@ -90,10 +94,19 @@ class OptimizeDronePoseData:
         plt.show()
         dict = {'x': self.correctedData.x, 'y':self.correctedData.y,
             'z':self.correctedData.z, 't':self.correctedData.t}
-
         df = pd.DataFrame(dict)
         fileName = self.path + '/correctedPose.csv'
         df.to_csv(fileName)
+
+        df = pd.DataFrame({'Time':self.correctedData.t,
+                'Xs':self.correctedData.x,
+                'Ys':self.correctedData.y,
+				'Zs':self.correctedData.z,
+				'phi':self.correctedData.phi,
+				'theta':self.correctedData.theta,
+				'psi':self.correctedData.psi})
+        fileName = self.path + '/cleanCorrectedPose.csv'
+        df.to_csv(fileName, mode='w', index=False, header=False)
 
 
     def set_axes_equal(self):
@@ -130,18 +143,52 @@ class OptimizeDronePoseData:
         xs = []
         ys = []
         zs = []
+        phi = []
+        theta = []
+        psi = []
+        time = []
+        fullData = pd.read_csv(self.path + "/zodomPoses.csv" , sep=',', header=None)
+        self.phi_rad = np.array(fullData.values[:,4])
+        self.theta_rad = np.array(fullData.values[:,5])
+        self.psi_rad = np.array(fullData.values[:,6])
+        self.time = np.array(fullData.values[:,0])
+
+        
         for k in range(np.shape(self.actualData.t)[0]):
             t = self.actualData.t[k]
             newData = self.params[0]*self.actualData.get(t) + \
                 self.params[1:4]*t + self.params[4:7]
-
             xs.append(newData[0])
             ys.append(newData[1])
             zs.append(newData[2])
 
+        for i in self.phi_rad:
+            phi.append([i])
+        for i in self.theta_rad:
+            theta.append([i])
+        for i in self.psi_rad:
+            psi.append([i])
+        for i in self.time:
+            time.append([i])
+
+
+
+        # print(np.transpose(np.array(ys)))
+        # print(np.transpose(np.array(time)))
+
+        # for k in self.actualData.:
+
+        # self.correctedData = PoseData(xs = np.transpose(np.array(xs)),
+        #     ys = np.transpose(np.array(ys)), zs = np.transpose(np.array(zs)),
+        #     ts = self.actualData.t)
+
         self.correctedData = PoseData(xs = np.transpose(np.array(xs)),
-            ys = np.transpose(np.array(ys)), zs = np.transpose(np.array(zs)),
-            ts = self.actualData.t)
+            ys = np.transpose(np.array(ys)), 
+            zs = np.transpose(np.array(zs)),
+            phi = np.transpose(np.array(phi)),
+            theta = np.transpose(np.array(theta)),
+            psi = np.transpose(np.array(psi)),
+            ts = np.transpose(np.array(time)))
         print("done")
 
 

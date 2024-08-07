@@ -469,8 +469,8 @@ class MovingObjectGroundTruthGeneration:
 
 		if not x is None and not y is None:
 			# print(x,y,self._time)
-			df_marker = pd.DataFrame({'Xs':[x], 'Ys':[y], 'Time':[self._time]})
-			df_marker.to_csv(self._saveDir+"/objectPoses.csv", mode='a', index=False, header=False)
+			df_marker = pd.DataFrame({'Time':[self._time], 'Xs':[x], 'Ys':[y], 'Zs':[0]})
+			df_marker.to_csv(self._saveDir+"/objectPoses.csv", mode='w', index=False, header=False)
 	
 
 	# def extractFileAddress(self, path):
