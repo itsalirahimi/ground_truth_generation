@@ -8,7 +8,8 @@ parser.add_argument('-p', '--path', help='The Path to the Bag File.', dest='path
 args, unknown = parser.parse_known_args()
 
 # Load the YOLOv8n model
-model = YOLO('yolov8n.pt')
+# model = YOLO('yolov8n.pt')
+model = YOLO('yolov8m.pt')
 
 def personDetect(input_image, output_image):
     # Load an image
@@ -81,7 +82,7 @@ path_out = args.path + "/YOLOImage/"
 dir_list = os.listdir(path_in)
 sort_dir = sorted(dir_list)
 
-output_file = open(args.path +"YOLOoutput.txt", "w")
+output_file = open(args.path +"/YOLOoutput.txt", "w")
 for img in sort_dir:
     result_points = personDetect(path_in+img, path_out+img)
     output_file.write(result_points+"\n")

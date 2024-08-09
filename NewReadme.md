@@ -81,7 +81,7 @@ pip install pandas
 1. Open `odomPoses.csv` and check the time of the first row of this CSV file.
 2. Open the `rawImage` folder. The names of the images indicate the time of that frame. Delete all frames where the time number is less than the time number of the first row of `odomPoses.csv`. The number of images in the `rawImage` folder should now match the number of rows in `odomPoses.csv`.
 
-## Step 4-A: Clean Outliers of `odomPoses`
+## Step 4: Clean Outliers of `odomPoses`
 
 1. Run `removeOdomOutliers.py`:
     ```bash
@@ -110,34 +110,34 @@ pip install pandas
     and comment out `plot_3d(x,y,z,t)`.
 5. Run again:
     ```bash
-    python3 removeOdomOutliers.py -p <The Path to the Bag File>
+    python3 removeOdomOutliers.py -p <save-dir>
     ```
 6. The script will print the values of row numbers related to outliers. Delete the corresponding rows from `odomPoses.csv` and the related images from `/rawImage` (check them by referencing the time column of the CSV file which shows the frame name in the `/rawImage` folder).
 
-## Step 4-B: Sync the odomPose and rawImage
+## Step 5: Sync the odomPose and rawImage
 Sync the odomPose and rawImage and delete the data related to the time which are before the horizontal hand pose.
 
-## Step 5: Rename Tello Images
+## Step 6: Rename Tello Images
 
 1. Run:
     ```bash
-    python3 renameTelloImage.py -p <The Path to the Bag File>
+    python3 renameTelloImage.py -p <save-dir>
     ```
 
 ### Output
 
 - `/cleanImage`
 
-## Step 6: Interpolate Missing Data
+## Step 7: Interpolate Missing Data
 
 1. Before running `getInterpolate.py`, copy `odomPoses.csv` and name it `zodomposes.csv`.
 2. Run:
     ```bash
-    python3 getInterpolate.py -p <The Path to the Bag File>
+    python3 getInterpolate.py -p <save-dir>
     ```
 3. Copy the output of the terminal and paste it in the “D” column of `zodomposes.csv`.
 
-## Step 7: Optimize the Drone's Path Using Aruco Markers' Data
+## Step 8: Optimize the Drone's Path Using Aruco Markers' Data
 
 Using a gradient descent approach, this feature corrects the drifted drone odometry poses to match the reliable Aruco pose data as much as possible. **No ROS Requirement**
 
@@ -152,7 +152,8 @@ Using a gradient descent approach, this feature corrects the drifted drone odome
 
 ### Output
 
-- The log for the optimization in the terminal. Parameters are printed in each optimization step and the convergence procedure can be monitored. When desired (when the change in parameters is ignorable), kill the program and save the last printed parameters.
+- The log for the optimization in the terminal. Parameters are printed in each optimization step and the convergence procedure can be monitored. When desired (when the change in parameters is ignorable), kill the program and save the last printed parameters. (Don't forget to add comma "," between numbers)
+- Ex: params0 = [0.87904138, -0.03340808, -0.01419431, 0.00430938, -0.02820221, 0.02055454, 0.00184789]
 
 ### Correcting the Odometry Data Using the Optimal Parameters
 
@@ -168,7 +169,7 @@ Using a gradient descent approach, this feature corrects the drifted drone odome
 - `correctedPose.csv` (The corrected odometry poses)
 - A plot showing the raw odometry poses, corrected odometry poses, and the Aruco marker poses (as scattered points)
 
-## Step 8: YOLO Detection
+## Step 9: YOLO Detection
 
 1. Run:
     ```bash
@@ -179,7 +180,7 @@ Using a gradient descent approach, this feature corrects the drifted drone odome
 
 - `YOLOoutput.txt`
 
-## Step 9: Remove YOLO Outliers
+## Step 10: Remove YOLO Outliers
 
 1. In the root directory, run:
     ```bash
