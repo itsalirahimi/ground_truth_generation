@@ -37,11 +37,8 @@ t = np.array(dataFrame.values[:,0])
 
 # c = 1
 # for i in z:
-#     if i > 40:
+#     if i > 20:
 #         print (c)
 #     c += 1
-
-
-# plot x y z
 
 plot_3d(x,y,z,t)

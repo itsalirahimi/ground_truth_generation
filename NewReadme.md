@@ -53,7 +53,7 @@ pip install pandas
 1. Run:
     ```bash
     cd ground_truth_generation
-    ./bash/droneLog.sh <save-dir> <bag-file>.bag
+    bash ./bash/droneLog.sh <save-dir> <bag-file>.bag
     ```
 2. When the output image of `telloGTGeneration.py` is shown, hit the `A` key the first time you see a marker in the robot's camera view. This position will be considered the initial point of the drone pose. Note that the `A` key must be hit when a marker is detected. You can see the poses obtained from markers (red) along with the drone odometry plot (blue).
 
@@ -68,7 +68,7 @@ pip install pandas
 
 1. After performing the instructions to save drone pose data, in the root directory, run:
     ```bash
-    ./bash/removeMarkerOutliers.sh <save-dir>
+    ./bash/removeMarkerOutliers.sh <save-dir> <bagfile-dir>
     ```
 2. The frames in which pose data is extracted from detected markers will be shown. Based on the appearance of the 3-axes, where they don't make sense, press `d`. Otherwise, press any key until the images are finished.
 
@@ -81,12 +81,12 @@ pip install pandas
 1. Open `odomPoses.csv` and check the time of the first row of this CSV file.
 2. Open the `rawImage` folder. The names of the images indicate the time of that frame. Delete all frames where the time number is less than the time number of the first row of `odomPoses.csv`. The number of images in the `rawImage` folder should now match the number of rows in `odomPoses.csv`.
 
-## Step 4: Clean Outliers of `odomPoses`
+## Step 4-A: Clean Outliers of `odomPoses`
 
 1. Run `removeOdomOutliers.py`:
     ```bash
     cd src
-    python3 removeOdomOutliers.py -p <The Path to the Bag File>
+    python3 removeOdomOutliers.py -p <Save-dir>
     ```
 2. First, comment these lines from the last part to visualize the 3D plot:
     ```python
@@ -97,10 +97,10 @@ pip install pandas
     #     c += 1
     # plot x y z
     ```
-3. Check that the outlier’s z-axis values are greater than a specific number (call it “c”).
-4. Change this line in the code (e.g., `c = 40`). Then uncomment this part:
+3. Check that the outlier’s z-axis values are greater than a specific number (call it “i”).
+4. Change this line in the code (e.g., `i > 40`). Then uncomment this part:
     ```python
-    c = 40
+    c = 1
     for i in z:
         if i > 40:
             print(c)
@@ -113,6 +113,9 @@ pip install pandas
     python3 removeOdomOutliers.py -p <The Path to the Bag File>
     ```
 6. The script will print the values of row numbers related to outliers. Delete the corresponding rows from `odomPoses.csv` and the related images from `/rawImage` (check them by referencing the time column of the CSV file which shows the frame name in the `/rawImage` folder).
+
+## Step 4-B: Sync the odomPose and rawImage
+Sync the odomPose and rawImage and delete the data related to the time which are before the horizontal hand pose.
 
 ## Step 5: Rename Tello Images
 
